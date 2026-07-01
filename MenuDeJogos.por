@@ -1,10 +1,11 @@
 programa {
 
-  caracter tI[3][3] = {{1, 2, 3},{4,5,6},{7,8,9}}
+  // MATRIZ GLOBAL DO TABULEIRO
+  caracter tI[3][3] = {{'1', '2', '3'},{'4','5','6'},{'7','8','9'}}
 
   funcao inicio() {
     
-  menuDeJogos()
+    menuDeJogos() // ABRE O MENU DE JOGOS COM AS OPÇÕES DISPONÍVEIS PRIMEIRO
 
   }
 
@@ -32,7 +33,7 @@ programa {
         pare
 
       caso 2:
-        iniciarJogoDaVelha() // ABRE A FUNÇÃO ONDE HÁ O CÓDIGO DO JOGO DA VELHA
+        jogarJogoDaVelha() // ABRE O JOGO DA VELHA
         pare
 
       caso 3:
@@ -44,7 +45,7 @@ programa {
           pare
 
         caso 5:
-          escreva("Saindo...") // SIMULA A SAÍDA DO MENU
+          escreva("Saindo... Até logo!") // SIMULA A SAÍDA DO MENU
           pare
         
         // SE O USUÁRIO DIGITAR UMA OPÇÃO INVÁLIDA:
@@ -66,15 +67,115 @@ programa {
   // ###################################################
  
   // PROGRAMA DO JOGO DA VELHA:
-  funcao iniciarJogoDaVelha() {
-    escreva("=== JOGO DA VELHA ===\n")
-    escreva("  ",tI[0][0], "  |  ",tI[0][1], "  |  ",tI[0][2],"\n")
-    escreva("----- ----- -----\n")
-    escreva("  ",tI[1][0], "  |  ",tI[1][1], "  |  ",tI[1][2],"\n")
-    escreva("----- ----- -----\n")
-    escreva("  ",tI[2][0], "  |  ",tI[2][1], "  |  ",tI[2][2],"\n")
+  funcao jogarJogoDaVelha() {
+      caracter posicaoEscolhida
+      caracter playerAtual = 'X'
+      inteiro totalJogadas = 0
+      logico algumVencedor = falso // VARIÁVEL DE CONTROLE DE FLUXO DO JOGO
+    
+    enquanto (totalJogadas < 9 e algumVencedor == falso) {
+      iniciarJogoDaVelha()
 
+      escreva("Jogador [", playerAtual, "], digite onde quer jogar: ")
+      leia(posicaoEscolhida)
+        
+      jogadasJV(posicaoEscolhida, playerAtual)
+
+      algumVencedor = verificarVencedor(playerAtual)
+      se (algumVencedor == verdadeiro) {
+        totalJogadas++
+      } senao {
+        // LÓGICA DE ALTERNÂNCIA DOS PLAYERS:
+          se (playerAtual == 'X') {
+            playerAtual = 'O'
+        } senao {
+              playerAtual = 'X'
+            }
+    totalJogadas++
+    }
   }
+    
+  iniciarJogoDaVelha()
+  se(algumVencedor == verdadeiro) {
+    escreva("Fim de jogo! O jogador [", playerAtual, "] venceu!\n")
+  } senao {
+    escreva("Fim de jogo! Deu velha!\n")
+  }
+}
+
+    funcao iniciarJogoDaVelha() {
+      limpa()
+
+      escreva("=== JOGO DA VELHA ===\n")
+      escreva("  ",tI[0][0], "  |  ",tI[0][1], "  |  ",tI[0][2],"\n")
+      escreva("----- ----- -----\n")
+      escreva("  ",tI[1][0], "  |  ",tI[1][1], "  |  ",tI[1][2],"\n")
+      escreva("----- ----- -----\n")
+      escreva("  ",tI[2][0], "  |  ",tI[2][1], "  |  ",tI[2][2],"\n")
+  
+  }
+
+  funcao jogadasJV (caracter posicao, caracter player) {
+      escolha(posicao) {
+        caso '1':
+          tI[0][0] = player
+          pare
+
+        caso '2':
+          tI[0][1] = player
+          pare
+
+        caso '3':
+          tI[0][2] = player
+          pare
+
+        caso '4':
+          tI[1][0] = player
+          pare
+
+        caso '5':
+          tI[1][1] = player
+          pare
+
+        caso '6':
+          tI[1][2] = player
+          pare
+
+        caso '7':
+          tI[2][0] = player
+          pare
+
+        caso '8':
+          tI[2][1] = player
+          pare
+
+        caso '9':
+          tI[2][2] = player
+          pare
+
+        caso contrario:
+          escreva("Opção inválida! Digite um valor disponível.")
+          pare
+      }
+    }
+
+    funcao logico verificarVencedor(caracter player) {
+      // CHECAGEM DE LINHAS
+      se(tI[0][0] == tI[0][1] e tI[0][1] == tI[0][2]) retorne verdadeiro
+      se(tI[1][0] == tI[1][1] e tI[1][1] == tI[1][2]) retorne verdadeiro
+      se(tI[2][0] == tI[2][1] e tI[2][1] == tI[2][2]) retorne verdadeiro
+
+      // CHECAGEM DAS COLUNAS
+      se(tI[0][0] == tI[1][0] e tI[1][0] == tI[2][0]) retorne verdadeiro
+      se(tI[0][1] == tI[1][1] e tI[1][1] == tI[2][1]) retorne verdadeiro
+      se(tI[0][2] == tI[1][2] e tI[1][2] == tI[2][2]) retorne verdadeiro
+
+      // CHECAGEM DE DIAGONAIS
+      se(tI[0][0] == tI[1][1] e tI[1][1] == tI[2][2]) retorne verdadeiro
+      se(tI[0][2] == tI[1][1] e tI[1][1] == tI[2][0]) retorne verdadeiro
+
+      retorne falso
+    }
 
   // ###################################################
   
