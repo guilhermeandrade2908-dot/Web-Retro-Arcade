@@ -1,4 +1,7 @@
 programa {
+
+  caracter tI[3][3] = {{1, 2, 3},{4,5,6},{7,8,9}}
+
   funcao inicio() {
     
   menuDeJogos()
@@ -7,17 +10,9 @@ programa {
 
   funcao menuDeJogos() {
 
-      // VARIÁVEIS:
-    cadeia jogoDaVelha[3][3]
-    
-    inteiro opcao = -1
+    inteiro opcao = -1 // A VARIÁVEL OPÇÃO INICIA O PROGRAMA
 
-    cadeia player1 = "X"
-    cadeia player2 = "O"
-
-    inteiro linha, coluna, jogadas = 0
-
-    // PROGRAMA:  
+    // SISTEMA DO MENU:  
     enquanto (opcao>5 ou opcao<1) {
     
     escreva("=== MENU DE JOGOS ===\n")
@@ -62,18 +57,31 @@ programa {
     }
   }
 
-  // PROGRAMA DO JOGO DA VELHA:
-  funcao iniciarJogoDaVelha() {
-    escreva("=== JOGO DA VELHA ===\n")
-  }
 
   // PROGRAMA DO JOGO DA COBRINHA
   funcao iniciarJogoDaCobrinha() {
     escreva("=== JOGO DA COBRINHA ===\n")
   }
 
+  // ###################################################
+ 
+  // PROGRAMA DO JOGO DA VELHA:
+  funcao iniciarJogoDaVelha() {
+    escreva("=== JOGO DA VELHA ===\n")
+    escreva("  ",tI[0][0], "  |  ",tI[0][1], "  |  ",tI[0][2],"\n")
+    escreva("----- ----- -----\n")
+    escreva("  ",tI[1][0], "  |  ",tI[1][1], "  |  ",tI[1][2],"\n")
+    escreva("----- ----- -----\n")
+    escreva("  ",tI[2][0], "  |  ",tI[2][1], "  |  ",tI[2][2],"\n")
+
+  }
+
+  // ###################################################
+  
   // PROGRAMA DO JOGO DA NAVE
   funcao iniciarJogoDaNave() {
     escreva("=== JOGO DA NAVE ===\n")
   }
+
+  // ###################################################
 }
