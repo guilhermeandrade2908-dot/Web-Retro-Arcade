@@ -1,7 +1,18 @@
 programa {
 
-  // MATRIZ GLOBAL DO TABULEIRO
+  // ESCOPO GLOBAL DO JOGO DA COBRINHA:
+  
+  // MATRIZ GLOBAL DEFINIDA COMO 9 POR 9
+  cadeia campo[9][9] 
+  
+  // ##############################################
+  
+  // ESCOPO GLOBAL DO JOGO DA VELHA:
+ 
+  // MATRIZ GLOBAL DO TABULEIRO DO JOGO DA VELHA
   caracter tI[3][3] = {{'1', '2', '3'},{'4','5','6'},{'7','8','9'}}
+
+  // ##############################################
 
   funcao inicio() {
     
@@ -54,7 +65,7 @@ programa {
         // VOLTAR PARA O MENU
         pare
     
-    }
+      }
     }
   }
 
@@ -62,6 +73,41 @@ programa {
   // PROGRAMA DO JOGO DA COBRINHA
   funcao iniciarJogoDaCobrinha() {
     escreva("=== JOGO DA COBRINHA ===\n")
+	
+	// LAÇO DE REPETIÇÃO QUE GERA O CAMPO
+    para(inteiro i=0;i<9;i++) {
+    	escreva("\n")
+    	para(inteiro j=0; j<9;j++) {
+    		campo[i][j] = "[ ]"
+    		escreva(campo[i][j])
+    	}
+    }
+    	escreva("\n")
+
+    campo[0][0] = "[*]"
+	  campo[0][1] = "[*]"
+	  campo[0][2] = "[*]"
+
+	  telaDeCampoAtualizada()
+
+	  para(inteiro k=0;k<9;k+=3) {
+    	campo[0][0] = "[ ]"
+    	campo[0][k] = "[*]"
+
+	
+  }
+    telaDeCampoAtualizada()
+ }
+
+	// FUNÇÃO QUE ATUALIZA A TELA
+  funcao telaDeCampoAtualizada() {
+	escreva("\n")
+  para(inteiro i=0;i<9;i++) {
+    	escreva("\n")
+    	para(inteiro j=0; j<9;j++) {
+    		escreva(campo[i][j])
+  	}
+   }
   }
 
   // ###################################################
