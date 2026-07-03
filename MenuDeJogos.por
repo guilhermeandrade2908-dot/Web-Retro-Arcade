@@ -71,35 +71,37 @@ cadeia campo[9][9] // MATRIZ GLOBAL DEFINIDA COMO 9 POR 9
   funcao iniciarJogoDaCobrinha() {
     
   // VARIÁVEIS DE CORPO DA COBRA 
-  inteiro linhaRabo = 0
-  inteiro linhaCorpo = 0
-  inteiro linhaCabeca = 0
-  inteiro colunaRabo = 0
-  inteiro colunaCorpo = 1
-  inteiro colunaCabeca = 2
-  cadeia comando = ""
+  inteiro linhaRabo = 3
+  inteiro linhaCorpo = 3
+  inteiro linhaCabeca = 3
+  inteiro colunaRabo = 2
+  inteiro colunaCorpo = 3
+  inteiro colunaCabeca = 4
+  
+  
+  cadeia comando = "" // VARIÁVEL QUE VAI RECEBER A ENTRADA DE MOVIMENTO OU SAIDA
 
-	// LAÇO DE REPETIÇÃO QUE GERA O CAMPO
+	// LAÇO DE REPETIÇÃO PRINCIPAL DO JOGO
 
     enquanto (comando != "sair") {
 
-    para(inteiro i=0;i<9;i++) {
-    	escreva("\n")
+    para(inteiro i=0;i<9;i++) { // LAÇO DE REPETIÇÃO QUE GERA O CAMPO LIMPO NA MEMÓRIA
     	para(inteiro j=0; j<9;j++) {
     		campo[i][j] = "[ ]"
     	}
     }
 
+    // POSICIONA OS PEDAÇOS DA COBRA NAS COORDENADAS ATUAIS
     campo[linhaRabo][colunaRabo] = "[*]"
 	  campo[linhaCorpo][colunaCorpo] = "[*]"
 	  campo[linhaCabeca][colunaCabeca] = "[*]"
 
-    limpa()
+    limpa() // LIMPA A TELA PARA GERAR O EFEITO DE ANIMAÇÃO
 
     escreva("=== JOGO DA COBRINHA ===\n")
-    escreva("(Use A para Esquerda, D para a Direita | Digite 'sair' para parar)\n")
+    escreva("(Use W, A, S, D para mover | Digite 'sair' para parar)\n")
 
-    telaDeCampoAtualizada()
+    telaDeCampoAtualizada() // EXIBE O TABULEIRO RENDERIZADO
 
     escreva("\nDigite o comando: ")
     leia(comando)
@@ -107,18 +109,52 @@ cadeia campo[9][9] // MATRIZ GLOBAL DEFINIDA COMO 9 POR 9
     // MOVIMENTO PARA A DIREITA (TECLA D)
     se (comando == "d" ou comando == "D") {
       se (colunaCabeca < 8) {
+        linhaRabo = linhaCorpo
         colunaRabo = colunaCorpo
+
+        linhaCorpo = linhaCabeca
         colunaCorpo = colunaCabeca
-        colunaCabeca += 1
+
+        colunaCabeca += 1 // AVANÇA A CABEÇA PARA A DIREITA
       }
     }
 
     // MOVIMENTO PARA A ESQUERDA (TECLA A)
     senao se (comando == "a" ou comando == "A") {
-      se (colunaRabo > 0) {
-        colunaCabeca = colunaCorpo
-        colunaCorpo = colunaRabo
-        colunaRabo -= 1
+      se (colunaCabeca > 0) {
+        linhaRabo = linhaCorpo
+        colunaRabo = colunaCorpo
+
+        linhaCorpo = linhaCabeca
+        colunaCorpo = colunaCabeca
+        
+        colunaCabeca -= 1 // RECUA A CABEÇA PARA A ESQUERDA
+      }
+    }
+
+  // MOVIMENTO PARA BAIXO (TECLA S)
+  senao se (comando == "s" ou comando == "S") {
+    se (linhaCabeca < 8) {
+
+      linhaRabo = linhaCorpo
+      colunaRabo = colunaCorpo
+
+      linhaCorpo = linhaCabeca
+      colunaCorpo = colunaCabeca
+
+      linhaCabeca += 1 // DESCE A CABEÇA UM DEGRAU 
+     }
+    }
+
+    // MOVIMENTO PARA CIMA (TECLA W)
+    senao se (comando == "w" ou comando == "W") {
+      se (linhaCabeca > 0) {
+        linhaRabo = linhaCorpo
+        colunaRabo = colunaCorpo
+        linhaCorpo = linhaCabeca
+        colunaCorpo = colunaCabeca
+
+        linhaCabeca -= 1 // SOBE A CABEÇA UM DEGRAU
       }
     }
   }
@@ -133,6 +169,7 @@ cadeia campo[9][9] // MATRIZ GLOBAL DEFINIDA COMO 9 POR 9
     }
     escreva("\n")
   }
+
   
   // ###################################################
  
