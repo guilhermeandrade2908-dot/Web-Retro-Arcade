@@ -2,15 +2,13 @@ programa {
 
   // ESCOPO GLOBAL DO JOGO DA COBRINHA:
   
-  // MATRIZ GLOBAL DEFINIDA COMO 9 POR 9
-  cadeia campo[9][9] 
+cadeia campo[9][9] // MATRIZ GLOBAL DEFINIDA COMO 9 POR 9
   
   // ##############################################
   
   // ESCOPO GLOBAL DO JOGO DA VELHA:
  
-  // MATRIZ GLOBAL DO TABULEIRO DO JOGO DA VELHA
-  caracter tI[3][3] = {{'1', '2', '3'},{'4','5','6'},{'7','8','9'}}
+  caracter tI[3][3] = {{'1', '2', '3'},{'4','5','6'},{'7','8','9'}} // MATRIZ GLOBAL DO TABULEIRO DO JOGO DA VELHA
 
   // ##############################################
 
@@ -69,47 +67,73 @@ programa {
     }
   }
 
-
   // PROGRAMA DO JOGO DA COBRINHA
   funcao iniciarJogoDaCobrinha() {
-    escreva("=== JOGO DA COBRINHA ===\n")
-	
+    
+  // VARIÁVEIS DE CORPO DA COBRA 
+  inteiro linhaRabo = 0
+  inteiro linhaCorpo = 0
+  inteiro linhaCabeca = 0
+  inteiro colunaRabo = 0
+  inteiro colunaCorpo = 1
+  inteiro colunaCabeca = 2
+  cadeia comando = ""
+
 	// LAÇO DE REPETIÇÃO QUE GERA O CAMPO
+
+    enquanto (comando != "sair") {
+
     para(inteiro i=0;i<9;i++) {
     	escreva("\n")
     	para(inteiro j=0; j<9;j++) {
     		campo[i][j] = "[ ]"
-    		escreva(campo[i][j])
     	}
     }
-    	escreva("\n")
 
-    campo[0][0] = "[*]"
-	  campo[0][1] = "[*]"
-	  campo[0][2] = "[*]"
+    campo[linhaRabo][colunaRabo] = "[*]"
+	  campo[linhaCorpo][colunaCorpo] = "[*]"
+	  campo[linhaCabeca][colunaCabeca] = "[*]"
 
-	  telaDeCampoAtualizada()
+    limpa()
 
-	  para(inteiro k=0;k<9;k+=3) {
-    	campo[0][0] = "[ ]"
-    	campo[0][k] = "[*]"
+    escreva("=== JOGO DA COBRINHA ===\n")
+    escreva("(Use A para Esquerda, D para a Direita | Digite 'sair' para parar)\n")
 
-	
-  }
     telaDeCampoAtualizada()
- }
 
-	// FUNÇÃO QUE ATUALIZA A TELA
-  funcao telaDeCampoAtualizada() {
-	escreva("\n")
-  para(inteiro i=0;i<9;i++) {
-    	escreva("\n")
-    	para(inteiro j=0; j<9;j++) {
-    		escreva(campo[i][j])
-  	}
-   }
+    escreva("\nDigite o comando: ")
+    leia(comando)
+
+    // MOVIMENTO PARA A DIREITA (TECLA D)
+    se (comando == "d" ou comando == "D") {
+      se (colunaCabeca < 8) {
+        colunaRabo = colunaCorpo
+        colunaCorpo = colunaCabeca
+        colunaCabeca += 1
+      }
+    }
+
+    // MOVIMENTO PARA A ESQUERDA (TECLA A)
+    senao se (comando == "a" ou comando == "A") {
+      se (colunaRabo > 0) {
+        colunaCabeca = colunaCorpo
+        colunaCorpo = colunaRabo
+        colunaRabo -= 1
+      }
+    }
   }
-
+}
+  // FUNÇÃO QUE EXIBE A TELA ATUALIZADA
+  funcao telaDeCampoAtualizada() {
+    para(inteiro i=0; i<9; i++) {
+      escreva("\n")
+      para(inteiro j=0; j<9; j++) {
+        escreva(campo[i][j])
+      }
+    }
+    escreva("\n")
+  }
+  
   // ###################################################
  
   // PROGRAMA DO JOGO DA VELHA:
