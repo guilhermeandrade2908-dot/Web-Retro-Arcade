@@ -84,14 +84,19 @@ programa {
   // PROGRAMA DO JOGO DA COBRINHA
   funcao iniciarJogoDaCobrinha() {
     
-  // VARIÁVEIS DE CORPO DA COBRA 
-  inteiro linhaRabo = 3
-  inteiro linhaCorpo = 3
-  inteiro linhaCabeca = 3
-  inteiro colunaRabo = 2
-  inteiro colunaCorpo = 3
-  inteiro colunaCabeca = 4
+  // VARIÁVEIS DE CORPO DA COBRA UTILIZANDO VETORES
+  inteiro cobraX[81]
+  inteiro cobraY[81]
+  inteiro tamanhoCobra = 3 // TAMANHO INICIAL DA COBRA
 
+  
+  // DEFINE A POSIÇÃO INICIAL DA COBRA
+  cobraY[0] = 3 cobraX[0] = 4 // CABEÇA
+  cobraY[1] = 3 cobraX[1] = 3 // CORPO
+  cobraY[2] = 3 cobraX[2] = 2 // RABO
+
+  
+  // VARIÁVEIS DE SORTEIO DA MAÇÃ
   macaX = u.sorteia(0,8)
   macaY = u.sorteia(0,8)
   
@@ -111,10 +116,14 @@ programa {
     // POSICIONA A MAÇÃ NO VISUAL DO CAMPO 
       campo[macaY][macaX] = "[X]"
 
-    // POSICIONA OS PEDAÇOS DA COBRA NAS COORDENADAS ATUAIS
-    campo[linhaRabo][colunaRabo] = "[*]"
-	  campo[linhaCorpo][colunaCorpo] = "[*]"
-	  campo[linhaCabeca][colunaCabeca] = "[o]"
+    
+    // POSICIONA OS PEDAÇOS DA COBRA (RABO ATÉ O CORPO)
+    para(inteiro i = 1; i < tamanhoCobra; i++) {
+      campo[cobraY[i]][cobraX[i]] = "[*]"
+    }
+
+    campo[cobraY[0]][cobraX[0]] = "[o]"
+    
 
     limpa() // LIMPA A TELA PARA GERAR O EFEITO DE ANIMAÇÃO
 
@@ -126,73 +135,62 @@ programa {
     escreva("\nDigite o comando: ")
     leia(comando)
 
+    // PASSA O COMANDO DE TRÁS PRA FRENTE, RESPECTIVAMENTE: O PEDAÇO [2] PEGA O DO [1], O [1] PEGA O DA CABEÇA [0]
+    para(inteiro i = tamanhoCobra - 1; i > 0; i--) {
+      cobraX[i] = cobraX[i - 1]
+      cobraY[i] = cobraY[i - 1]
+    }
+
     // MOVIMENTO PARA A DIREITA (TECLA D)
     se (comando == "d" ou comando == "D") {
-        
-        linhaRabo = linhaCorpo
-        colunaRabo = colunaCorpo
-
-        linhaCorpo = linhaCabeca
-        colunaCorpo = colunaCabeca
-
-        colunaCabeca += 1 // AVANÇA A CABEÇA PARA A DIREITA
+        cobraX[0] += 1 // AVANÇA A CABEÇA PARA A DIREITA
       }
 
     // MOVIMENTO PARA A ESQUERDA (TECLA A)
     senao se (comando == "a" ou comando == "A") {
-        
-        linhaRabo = linhaCorpo
-        colunaRabo = colunaCorpo
-
-        linhaCorpo = linhaCabeca
-        colunaCorpo = colunaCabeca
-        
-        colunaCabeca -= 1 // RECUA A CABEÇA PARA A ESQUERDA
+        cobraX[0] -= 1 // RECUA A CABEÇA PARA A ESQUERDA
     }
 
   // MOVIMENTO PARA BAIXO (TECLA S)
-  senao se (comando == "s" ou comando == "S") {
-
-      linhaRabo = linhaCorpo
-      colunaRabo = colunaCorpo
-
-      linhaCorpo = linhaCabeca
-      colunaCorpo = colunaCabeca
-
-      linhaCabeca += 1 // DESCE A CABEÇA UM DEGRAU 
+    senao se (comando == "s" ou comando == "S") {
+        cobraY[0] += 1 // DESCE A CABEÇA UM DEGRAU 
      }
 
     // MOVIMENTO PARA CIMA (TECLA W)
     senao se (comando == "w" ou comando == "W") {
-       
-        linhaRabo = linhaCorpo
-        colunaRabo = colunaCorpo
-       
-        linhaCorpo = linhaCabeca
-        colunaCorpo = colunaCabeca
-
-        linhaCabeca -= 1 // SOBE A CABEÇA UM DEGRAU
+       cobraY[0] -= 1 // SOBE A CABEÇA UM DEGRAU
       }
-    
-    // SISTEMA DE COMER A MAÇÃ
-    se(linhaCabeca == macaY e colunaCabeca == macaX) {
-
-      macaX = u.sorteia(0,8)
-      macaY = u.sorteia(0,8)
-
-      score += 10
-
-    }
 
 
-    
     // SISTEMA DE GAME OVER: 
-    se(linhaCabeca < 0 ou linhaCabeca > 8 ou colunaCabeca < 0 ou colunaCabeca > 8) {
+    se(cobraY[0] < 0 ou cobraY[0] > 8 ou cobraX[0] < 0 ou cobraX[0] > 8) {
       limpa()
+      escreva("\n=========================")
       escreva("\n===    GAME OVER!     ===")
       escreva("\nVocê colidiu com a parede.")
       escreva("\n=========================")
+      
+      escreva("\nAperte ENTER para sair...")
+      cadeia pausa
+      leia(pausa)
+      
       comando = "sair"
+    }
+
+
+    // SISTEMA DE COMER A MAÇÃ
+    senao se(cobraY[0] == macaY e cobraX[0] == macaX) {
+      macaX = u.sorteia(0,8)
+      macaY = u.sorteia(0,8)
+      
+     
+      cobraX[tamanhoCobra] = cobraX[tamanhoCobra - 1]
+      cobraY[tamanhoCobra] = cobraY[tamanhoCobra - 1]
+
+      
+      tamanhoCobra += 1
+
+      score += 10
     }
   }
 }
