@@ -11,6 +11,9 @@ programa {
   inteiro macaX = 2
   inteiro macaY = 6
 
+  // SISTEMA DE PONTUAÇÃO DO JOGO DA COBRINHA
+  inteiro score = 0
+
   
   // ##############################################
   
@@ -105,6 +108,9 @@ programa {
     	}
     }
 
+    // POSICIONA A MAÇÃ NO VISUAL DO CAMPO 
+      campo[macaY][macaX] = "[X]"
+
     // POSICIONA OS PEDAÇOS DA COBRA NAS COORDENADAS ATUAIS
     campo[linhaRabo][colunaRabo] = "[*]"
 	  campo[linhaCorpo][colunaCorpo] = "[*]"
@@ -113,7 +119,7 @@ programa {
     limpa() // LIMPA A TELA PARA GERAR O EFEITO DE ANIMAÇÃO
 
     escreva("=== JOGO DA COBRINHA ===\n")
-    escreva("(Use W, A, S, D para mover | Digite 'sair' para parar)\n")
+    escreva("(Use W, A, S, D para mover | Digite 'sair' para parar) | Score: ", score)
 
     telaDeCampoAtualizada() // EXIBE O TABULEIRO RENDERIZADO
 
@@ -167,8 +173,20 @@ programa {
 
         linhaCabeca -= 1 // SOBE A CABEÇA UM DEGRAU
       }
+    
+    // SISTEMA DE COMER A MAÇÃ
+    se(linhaCabeca == macaY e colunaCabeca == macaX) {
+
+      macaX = u.sorteia(0,8)
+      macaY = u.sorteia(0,8)
+
+      score += 10
+
+    }
+
 
     
+    // SISTEMA DE GAME OVER: 
     se(linhaCabeca < 0 ou linhaCabeca > 8 ou colunaCabeca < 0 ou colunaCabeca > 8) {
       limpa()
       escreva("\n===    GAME OVER!     ===")
