@@ -25,6 +25,10 @@ programa {
   
   // ##############################################
 
+  // ESCOPO GLOBAL DO JOGO DA NAVE:
+
+  cadeia espaco[9][9]
+
   
   funcao inicio() {
     
@@ -324,8 +328,48 @@ programa {
   
   // PROGRAMA DO JOGO DA NAVE
   funcao iniciarJogoDaNave() {
+    inteiro naveX = 4
+
+    cadeia comando = ""
+
+    enquanto(comando != "sair") {
+
+      para(inteiro i = 0; i < 9; i++) {
+        para(inteiro j = 0; j < 9; j++) {
+          espaco[i][j] = "[ ]"
+        }
+      }
+
+      espaco[8][naveX] = "[▲]"
+
+      limpa()
+
     escreva("=== JOGO DA NAVE ===\n")
+    escreva("( Use A e D para mover | Digite 'sair' para parar )\n")
+
+    para(inteiro i = 0; i < 9; i++) {
+      escreva("\n")
+      para(inteiro j = 0; j < 9; j++) {
+        escreva(espaco[i][j])
+      }
+    }
+    escreva("\n")
+
+    escreva("\nComando: ")
+    leia(comando)
+
+    se(comando == "a" ou comando == "A") {
+      se(naveX > 0) {
+        naveX -= 1
+      }
+    }
+    senao se(comando == "d" ou comando == "D") {
+      se(naveX < 8) {
+        naveX += 1
+      }
+    }
   }
+}
 
   // ###################################################
 }
