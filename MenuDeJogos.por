@@ -2,6 +2,9 @@ programa {
 
   inclua biblioteca Util --> u
 
+  // SISTEMA DE PONTUAÇÃO
+  inteiro score = 0
+
   // ESCOPO GLOBAL DO JOGO DA COBRINHA:
   
   cadeia campo[9][9] // MATRIZ GLOBAL DEFINIDA COMO 9 POR 9
@@ -11,10 +14,7 @@ programa {
   inteiro macaX = 2
   inteiro macaY = 6
 
-  // SISTEMA DE PONTUAÇÃO DO JOGO DA COBRINHA
-  inteiro score = 0
 
-  
   // ##############################################
   
   
@@ -132,7 +132,8 @@ programa {
     limpa() // LIMPA A TELA PARA GERAR O EFEITO DE ANIMAÇÃO
 
     escreva("=== JOGO DA COBRINHA ===\n")
-    escreva("(Use W, A, S, D para mover | Digite 'sair' para parar) | Score: ", score)
+    escreva("PONTUAÇÃO: ", score, "\n")
+    escreva("(Use W, A, S, D para mover | Digite 'sair' para parar)")
 
     telaDeCampoAtualizada() // EXIBE O TABULEIRO RENDERIZADO
 
@@ -328,12 +329,18 @@ programa {
   
   // PROGRAMA DO JOGO DA NAVE
   funcao iniciarJogoDaNave() {
+    
     inteiro naveX = 4
 
     // VARIÁVEIS DO SISTEMA DE DISPARO
     logico tiroAtivo = falso
     inteiro tiroX = 0
     inteiro tiroY = 0
+
+    // VARIÁVEIS DOS INIMIGOS
+    inteiro inimigoX = u.sorteia(0,8)
+    inteiro inimigoY = 0
+    logico inimigoAtivo = verdadeiro
 
     cadeia comando = ""
 
@@ -350,13 +357,18 @@ programa {
       espaco[8][naveX] = "[▲]" // POSICIONA A NAVE NO MAPA
 
       se (tiroAtivo) {
-        espaco[tiroY][tiroX] = "[|]"
+        espaco[tiroY][tiroX] = "[|]" // POSICIONA O TIRO NO MAPA
       }
 
-      limpa() // APAGA O CAMPO ANTERIOR PARA DAR IMPRESSÃO DE MOVIMENTO
+      se(inimigoAtivo) {
+        espaco[inimigoY][inimigoX] = "[V]" // POSICIONA O INIMIGO NO MAPA
+      }
+
+      limpa() // ATUALIZA AUTOMATICAMENTE O MAPA E A MOVIMENTAÇÃO
 
     escreva("=== JOGO DA NAVE ===\n")
-    escreva("( Use A e D para mover | Digite 'sair' para parar )\n")
+    escreva("PONTUAÇÃO: ", score, "\n")
+    escreva("( Use A e D para mover | W para atirar | Digite 'sair' para parar )\n")
 
     // RENDERIZA O MAPA NA TELA
     para(inteiro i = 0; i < 9; i++) {
@@ -367,28 +379,29 @@ programa {
     }
     escreva("\n")
 
-    // SISTEMA DE MOVIMENTAÇÃO POR LEITURA DE ENTRADA E IF/ELSE IF
+    // SISTEMA DE ENTRADA DE COMANDO:
     escreva("\nComando: ")
     leia(comando)
 
-    se(comando == "a" ou comando == "A") { // SÓ MOVE PARA A ESQUERDA SE NÃO ESTIVER NA DIREITA
+    se(comando == "a" ou comando == "A") { 
       se(naveX > 0) {
         naveX -= 1
       }
     }
-    senao se(comando == "d" ou comando == "D") { // SÓ MOVE PARA A DIREITA SE NÃO ESTIVER NA ESQUERDA
+    senao se(comando == "d" ou comando == "D") { 
       se(naveX < 8) {
         naveX += 1
       }
     }
     // COMANDO DO SISTEMA DE TIRO:
     senao se(comando == "w" ou comando == "W") { 
-      se(nao tiroAtivo) { // SÓ PERMITE ATIRAR SE O TIRO NÃO ESTIVER ATIVO
+      se(nao tiroAtivo) { 
         tiroAtivo = verdadeiro
         tiroX = naveX
         tiroY = 7
       }
     }
+
     // ATUALIZA A POSIÇÃO DO TIRO A CADA RODADA:
     se(tiroAtivo) {
       tiroY -= 1
@@ -397,8 +410,36 @@ programa {
         tiroAtivo = falso
       }
     }
-  }
-}
 
+    // ATUALIZA A POSIÇÃO DO INIMIGO:
+    se(inimigoAtivo) {
+      inimigoY += 1
+    }
+
+    // SISTEMA DE COLISÃO CORRIGIDO:
+    se(tiroAtivo e inimigoAtivo e tiroX == inimigoX) {
+      // VERIFICA SE O TIRO ATINGIU O INIMIGO OU SE CRUZARAM NA MESMA RODADA
+      se(tiroY == inimigoY ou tiroY == inimigoY - 1) { 
+        score += 50
+        tiroAtivo = falso
+        tiroY = -1 // REMOVE O TIRO DA TELA
+
+        inimigoY = 0
+        inimigoX = u.sorteia(0,8)
+      }
+    }
+    
+    // SISTEMA DE GAME OVER:
+    se(inimigoY > 8) {
+        escreva("\n=====================================")
+        escreva("\n===           GAME OVER           ===")
+        escreva("\nOs invasores dominaram o planeta!    ")
+        escreva("\n=====================================\n")
+        comando = "sair"
+    }
+  }
+  }
+  
   // ###################################################
+
 }
