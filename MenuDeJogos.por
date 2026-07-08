@@ -381,14 +381,15 @@ programa {
         naveX += 1
       }
     }
-    senao se(comando == "w" ou comando == "W") {
-      se(nao tiroAtivo) {
+    // COMANDO DO SISTEMA DE TIRO:
+    senao se(comando == "w" ou comando == "W") { 
+      se(nao tiroAtivo) { // SÓ PERMITE ATIRAR SE O TIRO NÃO ESTIVER ATIVO
         tiroAtivo = verdadeiro
         tiroX = naveX
         tiroY = 7
       }
     }
-
+    // ATUALIZA A POSIÇÃO DO TIRO A CADA RODADA:
     se(tiroAtivo) {
       tiroY -= 1
       
