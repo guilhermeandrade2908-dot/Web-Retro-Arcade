@@ -330,6 +330,11 @@ programa {
   funcao iniciarJogoDaNave() {
     inteiro naveX = 4
 
+    // VARIÁVEIS DO SISTEMA DE DISPARO
+    logico tiroAtivo = falso
+    inteiro tiroX = 0
+    inteiro tiroY = 0
+
     cadeia comando = ""
 
     // LAÇO DE REPETIÇÃO PRINCIPAL DO JOGO DA NAVE:
@@ -343,6 +348,10 @@ programa {
       }
 
       espaco[8][naveX] = "[▲]" // POSICIONA A NAVE NO MAPA
+
+      se (tiroAtivo) {
+        espaco[tiroY][tiroX] = "[|]"
+      }
 
       limpa() // APAGA O CAMPO ANTERIOR PARA DAR IMPRESSÃO DE MOVIMENTO
 
@@ -370,6 +379,21 @@ programa {
     senao se(comando == "d" ou comando == "D") { // SÓ MOVE PARA A DIREITA SE NÃO ESTIVER NA ESQUERDA
       se(naveX < 8) {
         naveX += 1
+      }
+    }
+    senao se(comando == "w" ou comando == "W") {
+      se(nao tiroAtivo) {
+        tiroAtivo = verdadeiro
+        tiroX = naveX
+        tiroY = 7
+      }
+    }
+
+    se(tiroAtivo) {
+      tiroY -= 1
+      
+      se(tiroY < 0) {
+        tiroAtivo = falso
       }
     }
   }
