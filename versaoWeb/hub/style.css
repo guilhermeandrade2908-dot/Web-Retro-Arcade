@@ -4,3 +4,154 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+/* CONFIGURAÇÕES DE ESTILIZAÇÃO DO BODY DA PÁGINA */
+body {
+    background-color: #030305;
+    background-image: 
+        linear-gradient(rgba(10, 10, 15, 0) 50%, rgba(0, 0, 0, 0.55) 50%),
+        linear-gradient(90deg, rgba(255, 0, 127, 0.03), rgba(0, 240, 255, 0.03), rgba(0, 0, 0, 0));
+    background-size: 100% 4px, 6px 100%;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: "Press Start 2P", system-ui;
+    font-weight: 100;
+    font-style: normal;
+} 
+
+/* CONTAINER DO GABINETE DE ARCADE */
+.arcade-container {
+    background: #0d0e15;
+    border: 4px solid #1f2235;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 
+        0 0 15px rgba(0, 0, 0, 0.8),
+        inset 0 0 20px rgba(0, 240, 255, 0.05);
+    text-align: center;
+    position: relative;
+}
+
+/* TÍTULO NEON  COM EFEITO DE GLITCH CYBERPUNK */
+.neon-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #00f0ff;
+    letter-spacing: 5px;
+    text-shadow:
+        0 0 5px #00f0ff,
+        0 0 15px #00f0ff,
+        0 0 3opx #00f0ff;
+    position: relative;
+}
+
+/* EFEITO DE TEXTO PISCANTE */
+.blink-text {
+    font-size: 0.85rem;
+    color: #ff00ff;
+    margin-top: 0.5rem;
+    margin-bottom: 3rem;
+    letter-spacing: 2px;
+    animation: blink 1.2s infinite steps(2);
+}
+
+/* A TELA DE TUBO  */
+.arcade-cabinet {
+    background: #07080d;
+    border: 3px solid #ff007f;
+    border-radius: 10px;
+    padding: 2rem 1.5rem;
+    box-shadow:
+        0 0 10px rgba(255, 0, 127, 0.3),
+        inset 0 0 15px rgba(0, 0, 0, 0.9);
+    margin-bottom: 2rem;
+}
+
+.menu-title {
+    font-size: 1.1rem;
+    color: #8a8f98;
+    margin-bottom: 2rem;
+    letter-spacing: 3px;
+}
+
+/* LAYOUT DOS BOTÕES */
+.button-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+/* ESTILIZAÇÃO DOS BOTÕES */
+.arcade-btn {
+    background: transparent;
+    border: 2px solid #4e5473;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 1.1rem;
+    padding: 1rem;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s ease;
+    letter-spacing: 1px;
+    font-family: "Press Start 2P", system-ui;
+    font-weight: 100;
+    font-style: normal;
+}
+
+.btn-icon {
+    font-size: 1.3rem;
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)); 
+}
+
+.btn-pong:hover {
+    color: #00f0ff;
+    border-color: #00f0ff;
+    box-shadow: 0 0  15px rgba(0, 240, 255, 0.4);
+    transform: scale(1.02);
+}
+
+.btn-snake:hover {
+    color: #39ff14;
+    border-color: #39ff14;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+    transform: scale(1.02);
+}
+
+.btn-space-invaders:hover {
+    color: #ffff00;
+    border-color: #ffff00;
+    box-shadow: 0 0 15px rgba(255, 255, 0, 0.4);
+    transform: sclae(1.02);
+}
+
+/* FOOTER DA PÁGINA */
+.arcade-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1.5rem;
+    color: #4e5473;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.blink-text-footer {
+    color: #5f668d;
+    animation: blink 0.6s infinite steps(2);
+}
+
+/* ANIMAÇÃO DE PISCAR */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
