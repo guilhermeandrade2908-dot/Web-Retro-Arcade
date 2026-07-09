@@ -130,7 +130,7 @@ body {
     color: #ffff00;
     border-color: #ffff00;
     box-shadow: 0 0 15px rgba(255, 255, 0, 0.4);
-    transform: sclae(1.02);
+    transform: scale(1.02);
 }
 
 /* FOOTER DA PÁGINA */
