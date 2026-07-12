@@ -10,24 +10,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div>
-        <div>
-            <div>
-                <span>Player</span>
-                <span>00</span>
+    <div class="game-container">
+        <div class="scoreboard">
+            <div class="player-score">
+                <span class="label">Player</span>
+                <span id="player-score" class="neon-pink">00</span>
             </div>
-            <div>VS</div>
-            <div>
-                <span>CPU</span>
-                <span>00</span>
+            <div class="vs">VS</div>
+            <div class="player-score">
+                <span class="label">CPU</span>
+                <span id="cpu-score" class="neon-pink">00</span>
             </div>
         </div>
 
-        <canvas></canvas>
+        <canvas id="pongCanvas" width="800" height="500"></canvas>
 
-        <footer>
+        <footer class="controls-footer">
             <p>Mova o mouse para controlar a raquete</p>
-            <button>VOLTAR AO MENU</button>
+            <button class="btn-back" id="btn-back-menu">VOLTAR AO MENU</button>
         </footer>
     </div>
     
