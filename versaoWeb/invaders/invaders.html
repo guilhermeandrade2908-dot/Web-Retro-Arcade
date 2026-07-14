@@ -10,22 +10,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div>
-        <div>
-            <div>
-                <span>SCORE</span>
-                <span>0000</span>
+    <div class="arcade-conatainer">
+        <div class="game-header">
+            <div class="score-box">
+                <span class="label">SCORE</span>
+                <span id="score-text">0000</span>
             </div>
-            <div>
-                <span>LIVES</span>
-                <span>♥♥♥</span>
+            <div class="lives-box">
+                <span class="label">LIVES</span>
+                <span id="lives-text">♥♥♥</span>
             </div>
         </div>
 
-        <canvas></canvas>
+        <canvas id="spaceCanvas" width="600" height="750"></canvas>
 
-        <div>
-            <button>VOLTAR AO MENU</button>
+        <div class="game-footer">
+            <button id="btn-back-menu" class="btn-back">VOLTAR AO MENU</button>
         </div>
     </div>
 
