@@ -1,4 +1,4 @@
-# 🕹️ Arcade Retro Multijogos / Multigame Retro Arcade
+# 🕹️ Web Retro Arcade
 
 <p align="center">
   <a href="#-sobre-o-projeto">Português</a> • 
