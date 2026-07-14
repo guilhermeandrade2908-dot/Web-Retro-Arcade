@@ -1,0 +1,100 @@
+/* CONFIGURAÇÕES DE RESET DA PÁGINA */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ESTILIZAÇÃO DO BODY DO JOGO */
+body {
+    background-color: #0d0e15;
+    color: #fff;
+    font-family: 'Press Start 2P', system-ui;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* ESTILIZAÇÃO DO CONTAINER DO JOGO */
+.arcade-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(20, 21, 33, 0.6);
+    border: 2px solid #3d415e;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 0  30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+/* ESTILIZAÇÃO DE CABEÇALHO, PLACAR E VIDAS */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    width: 600px;
+    margin-bottom: 15px;
+    padding: 0 5px;
+}
+
+.score-box, .lives-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-size: 10px;
+    color: #4e5473;
+    letter-spacing: 1px;
+}
+
+#score-text {
+    font-size: 18px;
+    color: #00f0ff;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+#lives-text {
+    font-size: 18px;
+    color: #ff007f;
+    text-shadow: 0 0 8px rgba(255, 0, 127, 0.6);
+    letter-spacing: 2px;
+}
+
+#spaceCanvas {
+    background-color: #08090f;
+    border: 3px solid #3d415e;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+}
+
+/* FOOTER DA PÁGINA */
+.game-footer {
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-back {
+    font-family: 'Press Start 2P', system-ui;
+    background: transparent;
+    border: 2px solid #ff007f;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #ff007f;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px rgba(255, 0, 127, 0.4);
+    box-shadow: 0 0 10px rgba(255, 0, 127, 0.1);
+}
+
+.btn-back:hover {
+    background: #ff007f;
+    color: #0d0e15;
+    box-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
+    transform: scale(1.05);
+}
