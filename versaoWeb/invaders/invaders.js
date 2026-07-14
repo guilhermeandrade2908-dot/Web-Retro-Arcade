@@ -48,11 +48,11 @@ window.addEventListener("keyup", (evento) => { // ESCUTA QUANDO A TECLA É SOLTA
 
 // ATUALIZADORES E FÍSICA DO JOGO
 function atualizarMovimento() {
-    // SE A SETA DA ESQUERDA OU A TECLA 'A' ESTIVERAM PRESSIONADAS:
+    // SE A TECLA 'A' ESTIVER PRESSIONADA:
     if (teclas.arrowLeft || teclas.a) {
         player.x -= player.velocidade;
     }
-    // SE A SETA DIREITA OU A TECLA 'D' ESTIVERAM PRESSIONADAS: 
+    // SE A TECLA 'D' ESTIVER PRESSIONADA: 
     if (teclas.arrowRight || teclas.d) {
         player.x += player.velocidade;
     }
