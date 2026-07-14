@@ -25,15 +25,17 @@ body {
     background: rgba(20, 21, 33, 0.6);
     border: 2px solid #3d415e;
     border-radius: 16px;
-    padding: 20px;
+    padding: 15px;
     box-shadow: 0 0  30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.05);
+    justify-content: center;
+    max-height: 98vh;
 }
 
 /* ESTILIZAÇÃO DE CABEÇALHO, PLACAR E VIDAS */
 .game-header {
     display: flex;
     justify-content: space-between;
-    width: 600px;
+    width: 480px;
     margin-bottom: 15px;
     padding: 0 5px;
 }
@@ -68,9 +70,11 @@ body {
     border: 3px solid #3d415e;
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+    width: 480px;
+    height: 600px;
 }
 
-/* FOOTER DA PÁGINA */
+/* FOOTER DA PÁGINA E BOTÃO DO MENU*/
 .game-footer {
     margin-top: 20px;
     width: 100%;
