@@ -20,6 +20,20 @@ const bunkerColunas = 6; // QUANTIDADE DE COLUNAS DE BLOCOS POR BUNKERS
 const blocoTamanho = 8; // TAMANHO DE CADA "TIJOLO" DO BUNKER EM PIXEL
 const bunkerCor = "#00ff66";
 
+// CONFIGURAÇÕES DOS ALIENS
+const aliens = [];
+const aliensLinhas = 4; // QUATRO FILEIRAS DE INIMIGOS
+const aliensColunas = 8; // OITO ALIENS POR FILEIRA
+const aliensWidth = 30;
+const aliensHeight = 24;
+const aliensRecuoX = 15; // ESPAÇO HORIZONTAL ENTRE ELES
+const aliensRecuoY = 15; // ESPAÇO VERTICAL ENTRE AS FILEIRAS
+
+// CONTROLE DE MOVIMENTO DO BLOCO
+let aliensVelocidadeX = 1.5; // VELOCIDADE HORIZONTAL INICIAL (AUMENTA CONFORME MORREM)
+let aliensVelocidadeY = 15; // O QUANTO ELES DESCEM AO BATER NA BORDA
+let aliensDirecaoX = 1; // 1 = DIREITA, -1 = ESQUERDA
+
 // CONFIGURAÇÃO DO BOTÃO DE VOLTAR PARA O MENU
 btnBack.addEventListener('click', () => {
     window.location.href = "../hub/index.html";
@@ -98,10 +112,12 @@ function atualizarLasers() {
         // SE O LASER SAIR PELO TOPO, ELA É REMOVIDA DO ARRAY
         if (laser.y + laser.altura < 0) {
             lasers.splice(i, 1); // REMOVE O ELEMENTO DO ÍNDICE 'I'
+            continue; // PULA PARA O PRÓXIMO LASER, JÁ QUE ESTE SUMIU
         }
     
 
     // COLISÃO DO LASER COM OS BUNKERS
+    let colidiuBunker = false;
     for (let j = bunkers.length - 1; j >= 0; j--) {
         const bloco = bunkers[j];
 
@@ -113,8 +129,63 @@ function atualizarLasers() {
 
                 bunkers.splice(j, 1);
                 lasers.splice(i, 1);
+                colidiuBunker = true;
                 break;
             }
+        }
+    if (colidiuBunker) continue; // PULA A CHECAGEM DOS ALIENS SE O LASER JÁ QUEBROU NO BUNKER
+
+    // COLISÃO COM OS ALIENS
+    for (let a = aliens.length - 1; a >= 0; a--) {
+        const alien = aliens[a];
+
+        if (laser.x < alien.x +alien.largura &&
+            laser.x + laser.largura > alien.x &&
+            laser.y < alien.y + alien.altura &&
+            laser.y + laser.altura > alien.y) {
+
+                // SOMA OS PONTOS BASEADO NA FILEIRA DO ALIEN ATINGIDO
+                score += alien.pontos;
+                if (htmlScore) htmlScore.textContent = String(score).padStart(4, '0');
+
+                // REMOVE O ALIEN E O LASER QUE COLIDIRAM
+                aliens.splice(a, 1);
+                lasers.splice(i, 1);
+
+                // AUMENTA LIGEIRAMENTE A VELOCIDADE DOS SOBREVIVENTES
+                aliensVelocidadeX += 0.08;
+
+                break; // PARA O TESTE NO LASER EM ESPECÍFICO
+        }
+    }
+}
+}
+
+// FUNÇÃO QUE MOVE OS ALIENS E CHECA AS BORDAS:
+function atualizarAliens() {
+    let descerBloco = false;
+
+    // MOVE OS ALIENS HORIZONTALMENTE E VERFICIA SE ALGUM TOCOU A BORDA
+    for (let i = 0; i < aliens.length; i++) {
+        const alien = aliens[i];
+        alien.x += aliensVelocidadeX * aliensDirecaoX;
+
+        // SE ENCOSTAR NA BORDA DIREITA OU ESQUERDA DO CANVAS:
+        if (alien.x + alien.largura >= canvas.width - 10 || alien.x <= 10) {
+            descerBloco = true;
+        }
+
+        // SE ALGUM ALIEN ENCOSTAR NA LINHA DA NAVE, O JOGO ACABA:
+        if (alien.y + alien.altura >= player.y) {
+            jogoFinalizado = true;
+        }
+    }
+
+    // SE ALGUM ALIEN TOCOU A BORDA, INVERTE A DIREÇÃO HORIZONTAL E DESDE TODOS ELES EM UMA LINHA
+    if (descerBloco) {
+        aliensDirecaoX *= -1; // INVERTE O LADO
+        for (let i = 0; i < aliens.length; i++) {
+            aliens[i].y += aliensVelocidadeY; // DESCE O Y
         }
     }
 }
@@ -177,6 +248,22 @@ function desenharJogo() {
         context.fillRect(bloco.x, bloco.y, bloco.largura, bloco.altura);
     });
 
+    // DESENHO DOS ALIENS
+    aliens.forEach(alien => {
+        context.fillStyle = "#ff007f";
+        context.shadowBlur = 10;
+        context.shadowColor = "#ff007f";
+
+        // DESENHA O CORPO DO ALIEN
+        context.fillRect(alien.x, alien.y, alien.largura, alien.altura);
+
+        // DETALHE DOS OLHOS PRETOS DO ALIEN:
+        context.fillStyle = "#08090f";
+        context.shadowBlur = 0;
+        context.fillRect(alien.x + 6, alien.y + 6, 4, 4);
+        context.fillRect(alien.x + alien.largura - 10, alien.y + 6, 4, 4);
+    })
+
     // RESETA O EFEITO DE SOMBRA PARA NÃO IMPACTAR OUTRAS COISAS
     context.shadowBlur = 0;
 }
@@ -215,11 +302,34 @@ function inicializarBunkers() {
     }
 }
 
+// FUNÇÃO QUE CRIA A HORDA DE ALIENS NO TOPO DA TELA:
+function iniciaizarAliens() {
+    aliens.length = 0; // LIMPA O ARRAY ANTERIOR
+
+    // PONTO DE PARTIDA NO TOPO ESQUERDO DO CANVAS
+    const margemEsquerda = 35;
+    const margemTopo = 50;
+
+    for (let l = 0; l < aliensLinhas; l++) {
+        for (let c = 0; c < aliensColunas; c++) {
+            aliens.push({
+                x: margemEsquerda + c * (aliensWidth + aliensRecuoX),
+                y: margemTopo + l * (aliensHeight + aliensRecuoY),
+                largura: aliensWidth,
+                altura: aliensHeight,
+                pontos: (aliensLinhas - l) * 10, // AS FILEIRAS MAIS ALTAS DÃO MAIS PONTOS
+                vivo: true
+            });
+        }
+    }
+}
+
 // LOOP PRINCIPAL DO JOGO
 function gameLoop() {
     if (!jogoFinalizado) {
         atualizarMovimento();
         atualizarLasers();
+        atualizarAliens();
     }
 
     desenharJogo();
@@ -228,6 +338,7 @@ function gameLoop() {
 
 // INICIA OS BUNKERS
 inicializarBunkers();
-
+// INICIA OS ALIENS
+iniciaizarAliens();
 // INICIA O JOGO
 gameLoop();
