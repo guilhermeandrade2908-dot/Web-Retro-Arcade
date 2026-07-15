@@ -12,6 +12,14 @@ const laserLargura = 4;
 const laserAltura = 15;
 const maxLasersNaTela = 1;
 
+// CONFIGURAÇÕES DOS BUNKERS
+const bunkers = []; 
+const bunkerQuantidade = 4; // TOTAL DE ESCUDOS NA TELA
+const bunkerLinhas = 4; // QUANTIDADE DE LINHAS DE BLOCOS POR BUNKERS
+const bunkerColunas = 6; // QUANTIDADE DE COLUNAS DE BLOCOS POR BUNKERS
+const blocoTamanho = 8; // TAMANHO DE CADA "TIJOLO" DO BUNKER EM PIXEL
+const bunkerCor = "#00ff66";
+
 // CONFIGURAÇÃO DO BOTÃO DE VOLTAR PARA O MENU
 btnBack.addEventListener('click', () => {
     window.location.href = "../hub/index.html";
@@ -91,6 +99,23 @@ function atualizarLasers() {
         if (laser.y + laser.altura < 0) {
             lasers.splice(i, 1); // REMOVE O ELEMENTO DO ÍNDICE 'I'
         }
+    
+
+    // COLISÃO DO LASER COM OS BUNKERS
+    for (let j = bunkers.length - 1; j >= 0; j--) {
+        const bloco = bunkers[j];
+
+        // CHECA A COLISÃO
+        if (laser.x < bloco.x + bloco.largura &&
+            laser.x + laser.largura > bloco.x &&
+            laser.y < bloco.y + bloco.altura &&
+            laser.y + laser.altura > bloco.y) {
+
+                bunkers.splice(j, 1);
+                lasers.splice(i, 1);
+                break;
+            }
+        }
     }
 }
 
@@ -98,11 +123,11 @@ function atualizarLasers() {
 // ATUALIZADORES E FÍSICA DO JOGO
 function atualizarMovimento() {
     // SE A TECLA 'A' ESTIVER PRESSIONADA:
-    if (teclas.arrowLeft || teclas.a) {
+    if (teclas.a) {
         player.x -= player.velocidade;
     }
     // SE A TECLA 'D' ESTIVER PRESSIONADA: 
-    if (teclas.arrowRight || teclas.d) {
+    if (teclas.d) {
         player.x += player.velocidade;
     }
 
@@ -142,10 +167,52 @@ function desenharJogo() {
         context.shadowBlur = 10;
         context.shadowColor = laser.cor;
         context.fillRect(laser.x, laser.y, laser.largura, laser.altura);
-    })
+    });
+
+    // DESENHO OS BUNKERS
+    bunkers.forEach(bloco => {
+        context.fillStyle = bunkerCor;
+        context.shadowBlur = 8;
+        context.shadowColor = bunkerCor;
+        context.fillRect(bloco.x, bloco.y, bloco.largura, bloco.altura);
+    });
 
     // RESETA O EFEITO DE SOMBRA PARA NÃO IMPACTAR OUTRAS COISAS
     context.shadowBlur = 0;
+}
+
+// FUNÇÃO QUE INICIA OS BUNKERS DO JOGO:
+function inicializarBunkers() {
+    bunkers.length = 0; 
+
+    // CALCULA O ESPAÇAMENTO HORIZONTAL ENTRE OS 4 BUNKERS
+    const espacoTotal = canvas.width;
+    const larguraBunker = bunkerColunas * blocoTamanho;
+    const espacoDisponivel = espacoTotal - (larguraBunker * bunkerLinhas);
+    const intervaloX = espacoDisponivel / (bunkerQuantidade + 1); // DISTRIBUIÇÃO UNIFORME
+
+    for (let b = 0; b < bunkerQuantidade; b++) {
+        // CALCULA A COORDENADA X INICIAL DO BUNKER ESPECÍFICO
+        const inicioX = intervaloX + b * (larguraBunker + intervaloX);
+        const inicioY = canvas.height - 150; // POSICIONA UM POUCO ACIMA DA NAVE
+
+        // CRIA A GRADE DE TIJOLOS DO BUNKER:
+        for (let l = 0; l < bunkerLinhas; l++) {
+            for (let c = 0; c < bunkerColunas; c++) {
+
+                // PULA OS CANTOS SUPERIORES DO BUNKER PARA ELE FICAR COM A FORMA CLÁSSICA DE "U" INVERTIDO
+                if (l === 0 && (c === 0 || c === bunkerColunas - 1)) continue; // CORTA CANTOS DE CIMA
+                if (l === bunkerLinhas - 1 && (c > 1 && c < bunkerColunas - 2)) continue; // ABRE O VÃO DE BAIXO
+
+                bunkers.push({
+                    x: inicioX + (c * blocoTamanho),
+                    y: inicioY + (l * blocoTamanho),
+                    largura: blocoTamanho,
+                    altura: blocoTamanho
+                });
+            }
+        }
+    }
 }
 
 // LOOP PRINCIPAL DO JOGO
@@ -158,6 +225,9 @@ function gameLoop() {
     desenharJogo();
     requestAnimationFrame(gameLoop);
 }
+
+// INICIA OS BUNKERS
+inicializarBunkers();
 
 // INICIA O JOGO
 gameLoop();
