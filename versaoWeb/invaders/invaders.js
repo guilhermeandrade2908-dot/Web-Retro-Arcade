@@ -74,7 +74,8 @@ const player = {
 const teclas = {
     a: false,
     d: false,
-    " ": false // BARRA DE ESPAÇO
+    " ": false, // BARRA DE ESPAÇO
+    "Enter": false // BOTÃO DE REINICIAR
 };
 
 window.addEventListener("keydown", (evento) => { // ESCUTA QUANDO A TECLA É PRESSIONADA
@@ -95,6 +96,16 @@ window.addEventListener("keydown", (evento) => {
 
         if (evento.key === " ") {
             dispararLaser();
+        }
+    }
+});
+
+window.addEventListener("keydown", (evento) => {
+    if (evento.key in teclas) {
+        teclas[evento.key] = true;
+
+        if (evento.key === "Enter" && jogoFinalizado) {
+            reiniciarJogoCompleto();
         }
     }
 });
@@ -154,7 +165,7 @@ function atualizarLasers() {
     for (let a = aliens.length - 1; a >= 0; a--) {
         const alien = aliens[a];
 
-        if (laser.x < alien.x +alien.largura &&
+        if (laser.x < alien.x + alien.largura &&
             laser.x + laser.largura > alien.x &&
             laser.y < alien.y + alien.altura &&
             laser.y + laser.altura > alien.y) {
@@ -180,9 +191,9 @@ function atualizarLasers() {
                 }
 
                 break; // PARA O TESTE NO LASER EM ESPECÍFICO
+            }
         }
     }
-}
 }
 
 // FUNÇÃO QUE MOVE OS ALIENS E CHECA AS BORDAS:
@@ -283,6 +294,8 @@ function atualizarLasersAliens() {
                 // SE AINDA HOUVER VIDAS, RESETA A POSIÇÃO DO PLAYER NO CENTRO
                 if (lives > 0) {
                     player.x = canvas.width / 2 - naveWidth / 2;
+                } else {
+                    jogoFinalizado = true;
                 }
         }
     }
@@ -560,6 +573,55 @@ function inicializarAliens() {
     }
 }
 
+// FUNÇÃO QUE DESENHA TELA DE GAME OVER POR CIMA DO JOGO:
+function gameOver() {
+    context.fillStyle = "rgba(8, 9, 15, 0.85)";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    // CONFIGURAÇÃO E DESENHO DO TEXTO "GAME OVER"
+    context.font = "bold 40px 'Press Start 2P', system-ui";
+    context.fillStyle = "#ff0055";
+    context.textAlign = "center";
+    context.shadowBlur = 20;
+    context.shadowColor = "#ff0055";
+    context.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 50);
+
+    // DESENHA A PONTUAÇÃO FINAL DO JOGADOR
+    context.font = "20px 'Press Start 2P', system-ui";
+    context.fillStyle = "#00f0ff";
+    context.shadowBlur = 10;
+    context.shadowColor = "#00f0ff";
+    context.fillText("PRESSIONE [ENTER] PARA JOGAR NOVAMENTE", canvas.width / 2, canvas.height / 2 + 70);
+
+    // RESETA AS SOMBRAS PARA NÃO AFETAR OUTROS ELEMENTOS
+    context.shadowBlur = 0;
+}
+
+// FUNÇÃO QUE REINICIA TUDO PARA RECOMEÇAR O JOGO:
+function reiniciarJogoCompleto() {
+    score = 0;
+    lives = 3;
+    jogoFinalizado = false;
+    aliensVelocidadeX = 1.5;
+    aliensDirecaoX = 1;
+    ufo = null;
+
+    // LIMPA OS ARRAYS DE TIROS ATIVOS
+    lasers.length = 0;
+    laserAliens.length = 0;
+
+    // ATUALIZA OS TEXTOS DO HTML
+    if (htmlScore) htmlScore.textContent = "0000";
+    if (htmlLives) htmlLives.textContent = "♥".repeat(lives);
+
+    // REPOSICIONA O JOGADOR NO CENTRO
+    player.x = canvas.width / 2 - naveWidth / 2;
+
+    // RECONSTRÓI O MAPA DO JOGO
+    inicializarBunkers();
+    inicializarAliens();
+}
+
 // LOOP PRINCIPAL DO JOGO
 function gameLoop() {
     if (!jogoFinalizado) {
@@ -570,9 +632,14 @@ function gameLoop() {
         atirarAlien();
         atualizarLasersAliens();
         atualizarUfo();
-    }
+
+        desenharJogo();
+    } else {
 
     desenharJogo();
+    gameOver();
+}
+
     requestAnimationFrame(gameLoop);
 }
 
