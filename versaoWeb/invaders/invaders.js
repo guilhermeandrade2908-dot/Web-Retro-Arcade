@@ -575,24 +575,33 @@ function inicializarAliens() {
 
 // FUNÇÃO QUE DESENHA TELA DE GAME OVER POR CIMA DO JOGO:
 function gameOver() {
-    context.fillStyle = "rgba(8, 9, 15, 0.85)";
+    context.fillStyle = "rgba(8, 9, 15, 0.9)";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
     // CONFIGURAÇÃO E DESENHO DO TEXTO "GAME OVER"
-    context.font = "bold 40px 'Press Start 2P', system-ui";
+    context.font = "26px 'Press Start 2P', system-ui";
     context.fillStyle = "#ff0055";
     context.textAlign = "center";
     context.shadowBlur = 20;
     context.shadowColor = "#ff0055";
-    context.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 50);
+    
+    context.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 10);
 
     // DESENHA A PONTUAÇÃO FINAL DO JOGADOR
-    context.font = "20px 'Press Start 2P', system-ui";
+    context.font = "14px 'Press Start 2P', system-ui";
+    context.fillStyle = "#fff";
+    context.shadowBlur = 8;
+    context.shadowColor = "#fff";
+    context.fillText(`PONTUAÇÃO FINAL: ${String(score).padStart(4, '0')}`, canvas.width / 2, canvas.height / 2 + 50);
+
+    // INSTRUÇÃO PARA REINICIAR
+    context.font = "12px 'Press Start 2P', system-ui";
     context.fillStyle = "#00f0ff";
     context.shadowBlur = 10;
     context.shadowColor = "#00f0ff";
-    context.fillText("PRESSIONE [ENTER] PARA JOGAR NOVAMENTE", canvas.width / 2, canvas.height / 2 + 70);
-
+    
+    context.fillText("PRESSIONE [ENTER] PARA JOGAR NOVAMENTE", canvas.width / 2, canvas.height / 2 + 100);
+    
     // RESETA AS SOMBRAS PARA NÃO AFETAR OUTROS ELEMENTOS
     context.shadowBlur = 0;
 }
