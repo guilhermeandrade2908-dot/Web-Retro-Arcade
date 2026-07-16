@@ -210,11 +210,25 @@ function atualizarAliens() {
             descerBloco = true;
         }
 
+        // SE O ALIEN ENCOSTAR EM ALGUM BLOCO DO BUNKER, O BLOCO EXPLODDE:
+        for (let j = bunkers.length - 1; j >= 0; j--) {
+            const bloco = bunkers[j];
+    
+            if (alien.x < bloco.x + bloco.largura &&
+                alien.x + alien.largura > bloco.x &&
+                alien.y < bloco.y + bloco.altura &&
+                alien.y + alien.altura > bloco.y) {
+    
+                    bunkers.splice(j, 1); // REMOVE O PEDAÇO DO BUNKER
+                }
+        }
+        
         // SE ALGUM ALIEN ENCOSTAR NA LINHA DA NAVE, O JOGO ACABA:
         if (alien.y + alien.altura >= player.y) {
             jogoFinalizado = true;
         }
     }
+
 
     // SE ALGUM ALIEN TOCOU A BORDA, INVERTE A DIREÇÃO HORIZONTAL E DESDE TODOS ELES EM UMA LINHA
     if (descerBloco) {
