@@ -34,6 +34,13 @@ let aliensVelocidadeX = 1.5; // VELOCIDADE HORIZONTAL INICIAL (AUMENTA CONFORME 
 let aliensVelocidadeY = 15; // O QUANTO ELES DESCEM AO BATER NA BORDA
 let aliensDirecaoX = 1; // 1 = DIREITA, -1 = ESQUERDA
 
+// CONFIGURAÇÕES DOS TIROS DOS ALIENS
+const laserAliens = [];
+const laserAlienVelocidade = 4.5; // UM POUCO MAIS LENTO PARA TEMPO DE REAÇÃO
+const laserAlienLargura = 4;
+const laserAlienAltura = 16;
+let taxaDisparoAlien = 0.012; // PROBABILIDADE DE DISPARO POR FRAME DE APROXIMADAMENTE 1.2% DE CHANCE
+
 // CONFIGURAÇÃO DO BOTÃO DE VOLTAR PARA O MENU
 btnBack.addEventListener('click', () => {
     window.location.href = "../hub/index.html";
@@ -190,6 +197,79 @@ function atualizarAliens() {
     }
 }
 
+// FUNÇÃO QUE FAZ UM ALIEN ALEATÓRIO ATIRAR:
+function atirarAlien() {
+    if (aliens.length === 0) return;
+
+        // SORTEIA SE ALGUM ALIEN VAI ATIRAR NO FRAME
+        if (Math.random() < taxaDisparoAlien) {
+            // ESSCOLHE UM ALIEN ALEATÓRIO DA HORDA PARA DISPARAR:
+            const alienSorteado = aliens[Math.floor(Math.random() * aliens.length)];
+
+            // CRIA O TIRO SAINDO DA BASE DO ALIEN
+            laserAliens.push({
+                x: alienSorteado.x + (alienSorteado.largura / 2) - (laserAlienLargura / 2),
+                y: alienSorteado.y + alienSorteado.altura,
+                largura: laserAlienLargura,
+                altura: laserAlienAltura,
+                cor: "#ff0000"
+            });
+        }
+    }
+
+// FUNÇÃO QUE ATUALIZA OS TIROS DOS ALIENS E DETECTA AS COLISÕES
+function atualizarLasersAliens() {
+    for (let i = laserAliens.length - 1; i >= 0; i--) {
+        const tiro = laserAliens[i];
+
+        // FAZ O RAIO DESCER NA TELA
+        tiro.y += laserAlienVelocidade;
+
+        // SE SAIR PELA PARTE INFERIOR, REMOVE DO ARRAY:
+        if (tiro.y > canvas.height) {
+            laserAliens.splice(i, 1);
+            continue;
+        }
+
+        // COLISÃO DOS TIROS DOS ALIENS COM OS BUNKERS:
+        let colidiuBunker = false;
+        for (let j = bunkers.length - 1; j >= 0; j--) {
+            const bloco = bunkers[j];
+
+            if (tiro.x < bloco.x + bloco.largura &&
+                tiro.x + tiro.largura > bloco.x &&
+                tiro.y < bloco.y + bloco.altura &&
+                tiro.y + tiro.altura > bloco.y) {
+
+                    bunkers.splice(j, 1); // REMOVE O TIJOLO DO BUNKER
+                    laserAliens.splice(i, 1); // REMOVE O TIRO DO ALIEN
+                    colidiuBunker = true;
+                    break;
+                }
+        }
+
+        if (colidiuBunker) continue; // PULA PARA O PRÓXIMO TIRO SE ESTE COLIDIU NO BUNKER
+
+        // COLISÃO DOS TIROS DOS ALIENS COM O PLAYER
+        if (tiro.x < player.x + naveWidth &&
+            tiro.x + tiro.largura > player.x &&
+            tiro.y < player.y + naveHeight &&
+            tiro.y + tiro.altura > player.y) {
+
+                // REMOVE O TIRO QUE ATINGIU A NAVE:
+                laserAliens.splice(i, 1);
+
+                // REDUZ UMA VIDA:
+                lives--;
+                if (htmlLives) htmlLives.textContent = "♥".repeat(Math.max(0, lives)) || "---";
+
+                // SE AINDA HOUVER VIDAS, RESETA A POSIÇÃO DO PLAYER NO CENTRO
+                if (lives > 0) {
+                    player.x = canvas.width / 2 - naveWidth / 2;
+                }
+        }
+    }
+}
 
 // ATUALIZADORES E FÍSICA DO JOGO
 function atualizarMovimento() {
@@ -303,6 +383,25 @@ function desenharJogo() {
         };
     });
 
+    // DESENHO DOS TIROS DOS ALIENS
+    laserAliens.forEach(tiro => {
+        context.strokeStyle = "#ff0000";
+        context.lineWidth = 2.5;
+        context.shadowBlur = 10;
+        context.shadowColor = "#ff0000";
+
+        context.beginPath();
+        // COMEÇA NO TOPO DO LASER
+        context.moveTo(tiro.x + (tiro.largura / 2), tiro.y);
+
+        // DESENHA O ZIGUE-ZAGUE DO RAIO ATÉ O FINAL DA ALTURA DELE
+        context.lineTo(tiro.x, tiro.y + (tiro.altura * 0.3));
+        context.lineTo(tiro.x + tiro.largura, tiro.y + (tiro.altura * 0.6));
+        context.lineTo(tiro.x + (tiro.largura / 2), tiro.y + tiro.altura);
+
+        context.stroke()
+    });
+
     // RESETA O EFEITO DE SOMBRA PARA NÃO IMPACTAR OUTRAS COISAS
     context.shadowBlur = 0;
 }
@@ -342,7 +441,7 @@ function inicializarBunkers() {
 }
 
 // FUNÇÃO QUE CRIA A HORDA DE ALIENS NO TOPO DA TELA:
-function iniciaizarAliens() {
+function inicializarAliens() {
     aliens.length = 0; // LIMPA O ARRAY ANTERIOR
 
     // PONTO DE PARTIDA NO TOPO ESQUERDO DO CANVAS
@@ -369,6 +468,9 @@ function gameLoop() {
         atualizarMovimento();
         atualizarLasers();
         atualizarAliens();
+
+        atirarAlien();
+        atualizarLasersAliens();
     }
 
     desenharJogo();
@@ -378,6 +480,6 @@ function gameLoop() {
 // INICIA OS BUNKERS
 inicializarBunkers();
 // INICIA OS ALIENS
-iniciaizarAliens();
+inicializarAliens();
 // INICIA O JOGO
 gameLoop();
