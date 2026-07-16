@@ -41,6 +41,14 @@ const laserAlienLargura = 4;
 const laserAlienAltura = 16;
 let taxaDisparoAlien = 0.012; // PROBABILIDADE DE DISPARO POR FRAME DE APROXIMADAMENTE 1.2% DE CHANCE
 
+// CONFIGURAÇÕES DA NAVE MÃE
+let ufo = null; // COMEÇA NULL POR ESTAR FORA DA TELA
+const ufoLargura = 50;
+const ufoAltura = 24;
+const ufoVelocidade = 3.5;
+const ufoChanceAparecer = 0.002; 
+const ufoCor = "#3b05a0";
+
 // CONFIGURAÇÃO DO BOTÃO DE VOLTAR PARA O MENU
 btnBack.addEventListener('click', () => {
     window.location.href = "../hub/index.html";
@@ -266,6 +274,53 @@ function atualizarLasersAliens() {
                 // SE AINDA HOUVER VIDAS, RESETA A POSIÇÃO DO PLAYER NO CENTRO
                 if (lives > 0) {
                     player.x = canvas.width / 2 - naveWidth / 2;
+                }
+        }
+    }
+}
+
+function atualizarUfo() {
+    // CASO NÃO EXISTA UMA NAVE MÃE NA TELA, TENTA SPAWNAR:
+    if (ufo === null) {
+        if (Math.random() < ufoChanceAparecer && aliens.length > 0) {
+            // SORTEIA SE ELA VEM DA ESUQERDA (DIREÇÃO 1) OU DIREITA (DIREÇÃO -1)
+            const direcaoEsquerda = Math.random() < 0.5;
+            ufo = {
+                x: direcaoEsquerda ? -ufoLargura : canvas.width,
+                y: 15, // FICA POSICIONADO BEM NO TOPO DA TELA, ACIMA DOS ALIENS NORMAIS
+                largura: ufoLargura,
+                altura: ufoAltura,
+                direcao: direcaoEsquerda ? 1 : -1,
+                pontos: [100, 150, 200, 300][Math.floor(Math.random() * 4)] // PONTOS BONUS ALEATÓRIOS
+            };
+        }
+    } else {
+        // MOVE A NAVE MÃE HORIZONTALMENTE
+        // SE SAIR COMPLETAMENTE DA TELA, SOME COM ELA:
+        if (ufo.direcao === 1 && ufo.x > canvas.width) {
+            ufo = null;
+        } else if (ufo.direcao === -1 && ufo.x + ufo.largura < 0) {
+            ufo = null;
+        }
+    }
+
+    // DETECTA A COLISÃO DO LASER COM A NAVE MÃE:
+    if (ufo !== null) {
+        for (let i = lasers.length - 1; i >= 0; i--) {
+            const laser = lasers[i];
+
+            if (laser.x < ufo.x + ufo.largura &&
+                laser.x + laser.largura > ufo.x &&
+                laser.y < ufo.y + ufo.altura &&
+                laser.y + laser.altura > ufo.y) {
+
+                    // ACERTOU, LOGO, SOMA NA PONTUAÇÃO
+                    score += ufo.pontos;
+                    if (htmlScore) htmlScore.textContent = String(score).padStart(4, '0');
+
+                    ufo = null; // DESTRÓI A NAVE MÃE
+                    lasers.splice(i, 1); // REMOVE O LASER DO PLAYER
+                    break;
                 }
         }
     }
