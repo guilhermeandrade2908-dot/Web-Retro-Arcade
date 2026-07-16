@@ -296,6 +296,8 @@ function atualizarUfo() {
         }
     } else {
         // MOVE A NAVE MÃE HORIZONTALMENTE
+        ufo.x += ufoVelocidade * ufo.direcao;
+
         // SE SAIR COMPLETAMENTE DA TELA, SOME COM ELA:
         if (ufo.direcao === 1 && ufo.x > canvas.width) {
             ufo = null;
@@ -438,6 +440,38 @@ function desenharJogo() {
         };
     });
 
+    // DESENHO DA NAVE MÃE
+    if (ufo !== null) {
+        context.fillStyle = ufoCor;
+        context.shadowBlur = 15;
+        context.shadowColor = ufoCor;
+
+        // MAPA DE PIXEL 8X5:
+        const spriteUfo = [
+            [0, 0, 0, 1, 1, 1, 1, 0, 0, 0], // Cúpula de cima
+            [0, 1, 1, 1, 1, 1, 1, 1, 1, 0], 
+            [1, 1, 0, 1, 0, 0, 1, 0, 1, 1], // Janelinhas (0 são os furos vazios)
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // Prato central
+            [0, 0, 1, 0, 1, 1, 0, 1, 0, 0]  // Propulsores de baixo
+        ];
+
+        const pixelTamanhoX = ufo.largura / spriteUfo[0].length;
+        const pixelTamanhoY = ufo.altura / spriteUfo.length;
+
+        for (let l = 0; l < spriteUfo.length; l++) {
+            for (let c = 0; c < spriteUfo[l].length; c++) {
+                if (spriteUfo[l][c] === 1) {
+                    context.fillRect(
+                        ufo.x + (c * pixelTamanhoX),
+                        ufo.y + (l * pixelTamanhoY),
+                        pixelTamanhoX + 0.5,
+                        pixelTamanhoY + 0.5
+                    );
+                }
+            }
+        }
+    }
+
     // DESENHO DOS TIROS DOS ALIENS
     laserAliens.forEach(tiro => {
         context.strokeStyle = "#ff0000";
@@ -526,6 +560,7 @@ function gameLoop() {
 
         atirarAlien();
         atualizarLasersAliens();
+        atualizarUfo();
     }
 
     desenharJogo();
