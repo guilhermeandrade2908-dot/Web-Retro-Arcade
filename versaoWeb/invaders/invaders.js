@@ -170,6 +170,15 @@ function atualizarLasers() {
                 // AUMENTA LIGEIRAMENTE A VELOCIDADE DOS SOBREVIVENTES
                 aliensVelocidadeX += 0.08;
 
+                // SE NÃO SOBROU NENHUM ALIEN VIVO NAT TELA:
+                if (aliens.length === 0) {
+                    // REINICIA OS ALIENS NO TOPO NOVAMENTE
+                    inicializarAliens();
+
+                    // BÔNUS DE VELOCIDADE PARA A PRÓXIMA HORDA:
+                    aliensVelocidadeX = 1.5 + (score / 1000);
+                }
+
                 break; // PARA O TESTE NO LASER EM ESPECÍFICO
         }
     }
