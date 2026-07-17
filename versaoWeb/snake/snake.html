@@ -11,20 +11,20 @@
 </head>
 </head>
 <body>
-    <div>
-        <div>
-            <button>◀ VOLTAR</button>
-            <div>
-                <span>SCORE</span>
-                <span>0000</span>
+    <div class="game-container">
+        <div class="game-header">
+            <button id="btn-back-menu" class="btn-back">◀ VOLTAR</button>
+            <div class="score-container">
+                <span class="score-label">SCORE</span>
+                <span id="score-text" class="score-value">0000</span>
             </div>
         </div>
 
-        <canvas></canvas>
+        <canvas id="snakeCanvas" width="400" height="400"></canvas>
 
-        <div>
-            <p>Use as teclas 'W', 'A', 'S' e 'D' para mover a cobra</p>
-        </div>
+        <footer class="controls-footer">
+            <p class="instruction-text">Use as teclas 'W', 'A', 'S' e 'D' para mover a cobra</p>
+        </footer>
     </div>
 
     <script src="snake.js"></script>
