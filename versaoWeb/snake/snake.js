@@ -36,6 +36,9 @@ let direcaoMudouNesteFrame = false;
 let ultimoTempoExecucao = 0;
 const velocidadeJogo = 100; // 100 MILISSEGUNDOS POR PASSO (100MS = 10 PASSOS POR SEGUNDO)
 
+// PROPRIEDADES DA MAÇÃ
+let maca = {x: 5, y: 5};
+
 // CAPTURA DO TECLADO PARA MOVIMENTAÇÃO
 window.addEventListener("keydown", (evento) => {
     if (direcaoMudouNesteFrame) return; // IGNORA SE JÁ MUDOU DE DIREÇÃO NESTE PASSO
@@ -77,6 +80,20 @@ function moverCobrinha() {
     direcaoMudouNesteFrame = false;
 }
 
+// FUNÇÃO PARA GERAR A MAÇÃ NNUMA POSIÇÃO ALEATÓRIA:
+function gerarMaca() {
+    maca = {
+        x: Math.floor(Math.random() * colunas),
+        y: Math.floor(Math.random() * linhas)
+    };
+
+    // TRAVA DE SEGURANÇA PARA QUE A MAÇÃ NÃO SURJA DENTRO DA COBRA:
+    const travaComida = cobrinha.some(segmento => segmento.x === maca.x && segmento.y === maca.y);
+    if (travaComida) {
+        gerarMaca(); // TENTARÁ GERAR EM OUTRO LUGAR
+    }
+}
+
 // FUNÇÃO QUE DESENHA O JOGO:
 function desenharJogo() {
     // LIMPA O CAMPO DO CANVAS A CADA FRAME:
@@ -108,6 +125,22 @@ function desenharJogo() {
         );
         context.fill();
     });
+
+    // DESENHA A COMIDA
+    context.fillStyle = "#ff0055";
+    context.shadowBlur = 15;
+    context.shadowColor = "#ff0055";
+
+    // DESENHA UM QUADRADO LEVEMENTE MENOR QUE A CÉLULA E ARREDONDADO
+    context.beginPath();
+    context.roundRect(
+        maca.x * tamanhoBloco + 2,
+        maca.y * tamanhoBloco + 2,
+        tamanhoBloco - 4,
+        tamanhoBloco - 4,
+        6
+    );
+    context.fill();
 
     // RESETA O EFEITO DE SOMBRA PARA NÃO IMPACTAR OUTRAS COISAS
     context.shadowBlur = 0;
