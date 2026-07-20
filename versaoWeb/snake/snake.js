@@ -69,12 +69,22 @@ function moverCobrinha() {
         y: cobrinha[0].y + direcaoY
     };
 
+    // CHECA SE A COBRINHA COMEU A MAÇÃ
+    if (novaCabeca.x === maca.x && novaCabeca.y === maca.y) {
+        // AUMENTA A PONTUAÇÃO
+        score += 10;
+        htmlScore.textContent = String(score).padStart(4, '0');
+
+        // GERA UMA NOVA MAÇÃ:
+        gerarMaca();
+   
+    } else {
+        // SE NÃO COMEU, REMOVE O ÚLTIMO BLOCO
+        cobrinha.pop();
+    }
+
     // ADICIONA NOVA CABEÇA NO INÍCIO DO ARRAY:
     cobrinha.unshift(novaCabeca);
-
-    // ENQUANTO NÃO HÁ COMIDA, ELA VAI MANTENDO O TAMANHO FIXO:
-    cobrinha.pop();
-
 
     // RESETA A TRAVA DE DIREÇÃO PARA O PRÓXIMO PASSO
     direcaoMudouNesteFrame = false;
