@@ -10,7 +10,7 @@ let jogoFinalizado = false;
 
 // CONFIGURAÇÃO DO BOTÃO DE VOLTAR PARA O MENU
 btnBack.addEventListener('click', () => {
-    window.location.href = "../hub/index.html";
+    window.location.href = "../index.html";
 });
 
 // PROPRIEDADES DOS OBJETOS DO PONG:

@@ -6,7 +6,7 @@ const htmlScore = document.getElementById("score-text");
 
 // CONFIGURAÇÃO DO BOTÃO DE VOLTAR:
 btnBack.addEventListener('click', () => {
-    window.location.href = "../hub/index.html";
+    window.location.href = "../index.html";
 });
 
 // CONFIGURAÇÕES DA GRID:

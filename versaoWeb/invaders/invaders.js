@@ -51,7 +51,7 @@ const ufoCor = "#3b05a0";
 
 // CONFIGURAÇÃO DO BOTÃO DE VOLTAR PARA O MENU
 btnBack.addEventListener('click', () => {
-    window.location.href = "../hub/index.html";
+    window.location.href = "../index.html";
 });
 
 // CONFIGURAÇÕES DO ESTADO DE JOGO 
