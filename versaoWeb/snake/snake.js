@@ -41,6 +41,25 @@ let maca = {x: 5, y: 5};
 
 // CAPTURA DO TECLADO PARA MOVIMENTAÇÃO
 window.addEventListener("keydown", (evento) => {
+    // BOTÃO ENTER PARA REINICIAR O JOGO:
+    window.addEventListener("keydown", (evento) => {
+        if (evento.key === "Enter" && jogoFinalizado) {
+            // RESETA O ESTADO
+            cobrinha = [
+                {x: 10, y: 10},
+                {x: 9, y: 10},
+                {x: 8, y: 10}
+            ];
+            direcaoX = 1;
+            direcaoY = 0;
+            score = 0;
+            htmlScore.textContent = "0000";
+            gerarMaca();
+            jogoFinalizado = false;
+            direcaoMudouNesteFrame = false;
+            return;
+        }
+        
     if (direcaoMudouNesteFrame) return; // IGNORA SE JÁ MUDOU DE DIREÇÃO NESTE PASSO
 
     // CONVERTE PARA MINÚSCULO PARA IGNORAR O CAPSLOCK:
@@ -60,22 +79,6 @@ window.addEventListener("keydown", (evento) => {
             if (direcaoX !== -1) {direcaoX = 1; direcaoY = 0; direcaoMudouNesteFrame = true;}
     }
 
-    // BOTÃO ENTER PARA REINICIAR O JOGO:
-    if (evento.key === "Enter" && jogoFinalizado) {
-        // RESETA O ESTADO
-        cobrinha = [
-            {x: 10, y: 10},
-            {x: 9, y: 10},
-            {x: 8, y: 10}
-        ];
-        direcaoX = 1;
-        direcaoY = 0;
-        score = 0;
-        htmlScore.textContent = "0000";
-        gerarMaca();
-        jogoFinalizado = false;
-        return;
-    }
 });
 
 // FUNÇÃO DE MOVIMENTAÇÃO
