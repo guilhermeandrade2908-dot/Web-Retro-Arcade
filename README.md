@@ -25,7 +25,6 @@ Este repositório foi criado para documentar a minha evolução técnica no dese
 > ⚠️ **Nota de Transição Técnica:** Na versão Web, o *Jogo da Velha* (focado em matrizes estáticas no console) foi substituído pelo clássico *Pong*, juntamente com o desenvolvimento dos jogos *Snake* (Cobrinha) e *Space Invaders*, todos conectados por um Hub de navegação e hospedados na Vercel.
 
 ### 📂 Estrutura do Repositório
-* `📂 docs/`: Diários de bordo técnicos, diagramas e explicações sobre a matemática de colisões e algoritmos utilizados.
 * `📂 versaoPortugol/`: Os códigos-fonte originais baseados em turnos desenvolvidos no Portugol Studio.
 * `📂 versaoWeb/`: A aplicação web completa com o `index.html` (Hub/Menu central) na raiz e subpastas organizadas para os jogos (`/pong`, `/invaders`, `/snake`).
 
