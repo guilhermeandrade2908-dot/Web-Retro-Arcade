@@ -50,9 +50,11 @@ const ufoChanceAparecer = 0.002;
 const ufoCor = "#3b05a0";
 
 // CONFIGURAÇÃO DO BOTÃO DE VOLTAR PARA O MENU
-btnBack.addEventListener('click', () => {
-    window.location.href = "../index.html";
-});
+if (btnBack) {
+    btnBack.addEventListener('click', () => {
+        window.location.href = "../index.html";
+    });
+}
 
 // CONFIGURAÇÕES DO ESTADO DE JOGO 
 let score = 0;
@@ -74,45 +76,33 @@ const player = {
 const teclas = {
     a: false,
     d: false,
-    " ": false, // BARRA DE ESPAÇO
-    "Enter": false // BOTÃO DE REINICIAR
+    " ": false,
+    "Enter": false
 };
 
-window.addEventListener("keydown", (evento) => { // ESCUTA QUANDO A TECLA É PRESSIONADA
+// TECLADO UNIFICADO (CORREÇÃO 1)
+window.addEventListener("keydown", (evento) => {
     if (evento.key in teclas) {
         teclas[evento.key] = true;
     }
+
+    if (evento.key === " " && !jogoFinalizado) {
+        dispararLaser();
+    }
+
+    if (evento.key === "Enter" && jogoFinalizado) {
+        reiniciarJogoCompleto();
+    }
 });
 
-window.addEventListener("keyup", (evento) => { // ESCUTA QUANDO A TECLA É SOLTA
+window.addEventListener("keyup", (evento) => {
     if (evento.key in teclas) {
         teclas[evento.key] = false;
     }
 });
 
-window.addEventListener("keydown", (evento) => {
-    if (evento.key in teclas) {
-        teclas[evento.key] = true;
-
-        if (evento.key === " ") {
-            dispararLaser();
-        }
-    }
-});
-
-window.addEventListener("keydown", (evento) => {
-    if (evento.key in teclas) {
-        teclas[evento.key] = true;
-
-        if (evento.key === "Enter" && jogoFinalizado) {
-            reiniciarJogoCompleto();
-        }
-    }
-});
-
 // CRIA UM NOVO LASER NO TOPO DA NAVE
 function dispararLaser() {
-    // SE JÁ TIVER 1 DISPARO NA TELA, NÃO É POSSÍVEL ATIRAR:
     if (lasers.length >= maxLasersNaTela) return;
 
     const canhaoX = player.x + (naveWidth / 2) - (laserLargura / 2);
@@ -132,26 +122,22 @@ function atualizarLasers() {
     for (let i = lasers.length - 1; i >= 0; i--) {
         const laser = lasers[i];
 
-        // FAZ O LASER SUBIR NO EIXO Y
         laser.y -= laserVelocidade;
 
-        // SE O LASER SAIR PELO TOPO, ELA É REMOVIDA DO ARRAY
         if (laser.y + laser.altura < 0) {
-            lasers.splice(i, 1); // REMOVE O ELEMENTO DO ÍNDICE 'I'
-            continue; // PULA PARA O PRÓXIMO LASER, JÁ QUE ESTE SUMIU
+            lasers.splice(i, 1);
+            continue;
         }
-    
 
-    // COLISÃO DO LASER COM OS BUNKERS
-    let colidiuBunker = false;
-    for (let j = bunkers.length - 1; j >= 0; j--) {
-        const bloco = bunkers[j];
+        // COLISÃO DO LASER COM OS BUNKERS
+        let colidiuBunker = false;
+        for (let j = bunkers.length - 1; j >= 0; j--) {
+            const bloco = bunkers[j];
 
-        // CHECA A COLISÃO
-        if (laser.x < bloco.x + bloco.largura &&
-            laser.x + laser.largura > bloco.x &&
-            laser.y < bloco.y + bloco.altura &&
-            laser.y + laser.altura > bloco.y) {
+            if (laser.x < bloco.x + bloco.largura &&
+                laser.x + laser.largura > bloco.x &&
+                laser.y < bloco.y + bloco.altura &&
+                laser.y + laser.altura > bloco.y) {
 
                 bunkers.splice(j, 1);
                 lasers.splice(i, 1);
@@ -159,58 +145,48 @@ function atualizarLasers() {
                 break;
             }
         }
-    if (colidiuBunker) continue; // PULA A CHECAGEM DOS ALIENS SE O LASER JÁ QUEBROU NO BUNKER
+        if (colidiuBunker) continue;
 
-    // COLISÃO COM OS ALIENS
-    for (let a = aliens.length - 1; a >= 0; a--) {
-        const alien = aliens[a];
+        // COLISÃO COM OS ALIENS
+        for (let a = aliens.length - 1; a >= 0; a--) {
+            const alien = aliens[a];
 
-        if (laser.x < alien.x + alien.largura &&
-            laser.x + laser.largura > alien.x &&
-            laser.y < alien.y + alien.altura &&
-            laser.y + laser.altura > alien.y) {
+            if (laser.x < alien.x + alien.largura &&
+                laser.x + laser.largura > alien.x &&
+                laser.y < alien.y + alien.altura &&
+                laser.y + laser.altura > alien.y) {
 
-                // SOMA OS PONTOS BASEADO NA FILEIRA DO ALIEN ATINGIDO
                 score += alien.pontos;
                 if (htmlScore) htmlScore.textContent = String(score).padStart(4, '0');
 
-                // REMOVE O ALIEN E O LASER QUE COLIDIRAM
                 aliens.splice(a, 1);
                 lasers.splice(i, 1);
 
-                // AUMENTA LIGEIRAMENTE A VELOCIDADE DOS SOBREVIVENTES
                 aliensVelocidadeX += 0.08;
 
-                // SE NÃO SOBROU NENHUM ALIEN VIVO NAT TELA:
                 if (aliens.length === 0) {
-                    // REINICIA OS ALIENS NO TOPO NOVAMENTE
                     inicializarAliens();
-
-                    // BÔNUS DE VELOCIDADE PARA A PRÓXIMA HORDA:
                     aliensVelocidadeX = 1.5 + (score / 1000);
                 }
 
-                break; // PARA O TESTE NO LASER EM ESPECÍFICO
+                break;
             }
         }
     }
 }
 
-// FUNÇÃO QUE MOVE OS ALIENS E CHECA AS BORDAS:
+// FUNÇÃO QUE MOVE OS ALIENS E CHECA AS BORDAS
 function atualizarAliens() {
     let descerBloco = false;
 
-    // MOVE OS ALIENS HORIZONTALMENTE E VERFICIA SE ALGUM TOCOU A BORDA
     for (let i = 0; i < aliens.length; i++) {
         const alien = aliens[i];
         alien.x += aliensVelocidadeX * aliensDirecaoX;
 
-        // SE ENCOSTAR NA BORDA DIREITA OU ESQUERDA DO CANVAS:
         if (alien.x + alien.largura >= canvas.width - 10 || alien.x <= 10) {
             descerBloco = true;
         }
 
-        // SE O ALIEN ENCOSTAR EM ALGUM BLOCO DO BUNKER, O BLOCO EXPLODDE:
         for (let j = bunkers.length - 1; j >= 0; j--) {
             const bloco = bunkers[j];
     
@@ -219,61 +195,52 @@ function atualizarAliens() {
                 alien.y < bloco.y + bloco.altura &&
                 alien.y + alien.altura > bloco.y) {
     
-                    bunkers.splice(j, 1); // REMOVE O PEDAÇO DO BUNKER
-                }
+                bunkers.splice(j, 1);
+            }
         }
         
-        // SE ALGUM ALIEN ENCOSTAR NA LINHA DA NAVE, O JOGO ACABA:
         if (alien.y + alien.altura >= player.y) {
             jogoFinalizado = true;
         }
     }
 
-
-    // SE ALGUM ALIEN TOCOU A BORDA, INVERTE A DIREÇÃO HORIZONTAL E DESDE TODOS ELES EM UMA LINHA
     if (descerBloco) {
-        aliensDirecaoX *= -1; // INVERTE O LADO
+        aliensDirecaoX *= -1;
         for (let i = 0; i < aliens.length; i++) {
-            aliens[i].y += aliensVelocidadeY; // DESCE O Y
+            aliens[i].y += aliensVelocidadeY;
         }
     }
 }
 
-// FUNÇÃO QUE FAZ UM ALIEN ALEATÓRIO ATIRAR:
+// FUNÇÃO QUE FAZ UM ALIEN ALEATÓRIO ATIRAR
 function atirarAlien() {
     if (aliens.length === 0) return;
 
-        // SORTEIA SE ALGUM ALIEN VAI ATIRAR NO FRAME
-        if (Math.random() < taxaDisparoAlien) {
-            // ESSCOLHE UM ALIEN ALEATÓRIO DA HORDA PARA DISPARAR:
-            const alienSorteado = aliens[Math.floor(Math.random() * aliens.length)];
+    if (Math.random() < taxaDisparoAlien) {
+        const alienSorteado = aliens[Math.floor(Math.random() * aliens.length)];
 
-            // CRIA O TIRO SAINDO DA BASE DO ALIEN
-            laserAliens.push({
-                x: alienSorteado.x + (alienSorteado.largura / 2) - (laserAlienLargura / 2),
-                y: alienSorteado.y + alienSorteado.altura,
-                largura: laserAlienLargura,
-                altura: laserAlienAltura,
-                cor: "#ff0000"
-            });
-        }
+        laserAliens.push({
+            x: alienSorteado.x + (alienSorteado.largura / 2) - (laserAlienLargura / 2),
+            y: alienSorteado.y + alienSorteado.altura,
+            largura: laserAlienLargura,
+            altura: laserAlienAltura,
+            cor: "#ff0000"
+        });
     }
+}
 
 // FUNÇÃO QUE ATUALIZA OS TIROS DOS ALIENS E DETECTA AS COLISÕES
 function atualizarLasersAliens() {
     for (let i = laserAliens.length - 1; i >= 0; i--) {
         const tiro = laserAliens[i];
 
-        // FAZ O RAIO DESCER NA TELA
         tiro.y += laserAlienVelocidade;
 
-        // SE SAIR PELA PARTE INFERIOR, REMOVE DO ARRAY:
         if (tiro.y > canvas.height) {
             laserAliens.splice(i, 1);
             continue;
         }
 
-        // COLISÃO DOS TIROS DOS ALIENS COM OS BUNKERS:
         let colidiuBunker = false;
         for (let j = bunkers.length - 1; j >= 0; j--) {
             const bloco = bunkers[j];
@@ -283,58 +250,49 @@ function atualizarLasersAliens() {
                 tiro.y < bloco.y + bloco.altura &&
                 tiro.y + tiro.altura > bloco.y) {
 
-                    bunkers.splice(j, 1); // REMOVE O TIJOLO DO BUNKER
-                    laserAliens.splice(i, 1); // REMOVE O TIRO DO ALIEN
-                    colidiuBunker = true;
-                    break;
-                }
+                bunkers.splice(j, 1);
+                laserAliens.splice(i, 1);
+                colidiuBunker = true;
+                break;
+            }
         }
 
-        if (colidiuBunker) continue; // PULA PARA O PRÓXIMO TIRO SE ESTE COLIDIU NO BUNKER
+        if (colidiuBunker) continue;
 
-        // COLISÃO DOS TIROS DOS ALIENS COM O PLAYER
         if (tiro.x < player.x + naveWidth &&
             tiro.x + tiro.largura > player.x &&
             tiro.y < player.y + naveHeight &&
             tiro.y + tiro.altura > player.y) {
 
-                // REMOVE O TIRO QUE ATINGIU A NAVE:
-                laserAliens.splice(i, 1);
+            laserAliens.splice(i, 1);
+            lives--;
+            if (htmlLives) htmlLives.textContent = "♥".repeat(Math.max(0, lives)) || "---";
 
-                // REDUZ UMA VIDA:
-                lives--;
-                if (htmlLives) htmlLives.textContent = "♥".repeat(Math.max(0, lives)) || "---";
-
-                // SE AINDA HOUVER VIDAS, RESETA A POSIÇÃO DO PLAYER NO CENTRO
-                if (lives > 0) {
-                    player.x = canvas.width / 2 - naveWidth / 2;
-                } else {
-                    jogoFinalizado = true;
-                }
+            if (lives > 0) {
+                player.x = canvas.width / 2 - naveWidth / 2;
+            } else {
+                jogoFinalizado = true;
+            }
         }
     }
 }
 
 function atualizarUfo() {
-    // CASO NÃO EXISTA UMA NAVE MÃE NA TELA, TENTA SPAWNAR:
     if (ufo === null) {
         if (Math.random() < ufoChanceAparecer && aliens.length > 0) {
-            // SORTEIA SE ELA VEM DA ESUQERDA (DIREÇÃO 1) OU DIREITA (DIREÇÃO -1)
             const direcaoEsquerda = Math.random() < 0.5;
             ufo = {
                 x: direcaoEsquerda ? -ufoLargura : canvas.width,
-                y: 15, // FICA POSICIONADO BEM NO TOPO DA TELA, ACIMA DOS ALIENS NORMAIS
+                y: 15,
                 largura: ufoLargura,
                 altura: ufoAltura,
                 direcao: direcaoEsquerda ? 1 : -1,
-                pontos: [100, 150, 200, 300][Math.floor(Math.random() * 4)] // PONTOS BONUS ALEATÓRIOS
+                pontos: [100, 150, 200, 300][Math.floor(Math.random() * 4)]
             };
         }
     } else {
-        // MOVE A NAVE MÃE HORIZONTALMENTE
         ufo.x += ufoVelocidade * ufo.direcao;
 
-        // SE SAIR COMPLETAMENTE DA TELA, SOME COM ELA:
         if (ufo.direcao === 1 && ufo.x > canvas.width) {
             ufo = null;
         } else if (ufo.direcao === -1 && ufo.x + ufo.largura < 0) {
@@ -342,7 +300,6 @@ function atualizarUfo() {
         }
     }
 
-    // DETECTA A COLISÃO DO LASER COM A NAVE MÃE:
     if (ufo !== null) {
         for (let i = lasers.length - 1; i >= 0; i--) {
             const laser = lasers[i];
@@ -352,60 +309,51 @@ function atualizarUfo() {
                 laser.y < ufo.y + ufo.altura &&
                 laser.y + laser.altura > ufo.y) {
 
-                    // ACERTOU, LOGO, SOMA NA PONTUAÇÃO
-                    score += ufo.pontos;
-                    if (htmlScore) htmlScore.textContent = String(score).padStart(4, '0');
+                score += ufo.pontos;
+                if (htmlScore) htmlScore.textContent = String(score).padStart(4, '0');
 
-                    ufo = null; // DESTRÓI A NAVE MÃE
-                    lasers.splice(i, 1); // REMOVE O LASER DO PLAYER
-                    break;
-                }
+                ufo = null;
+                lasers.splice(i, 1);
+                break;
+            }
         }
     }
 }
 
 // ATUALIZADORES E FÍSICA DO JOGO
 function atualizarMovimento() {
-    // SE A TECLA 'A' ESTIVER PRESSIONADA:
     if (teclas.a) {
         player.x -= player.velocidade;
     }
-    // SE A TECLA 'D' ESTIVER PRESSIONADA: 
     if (teclas.d) {
         player.x += player.velocidade;
     }
 
-    // LIMITADORES DE BORDAS DO JOGO
     if (player.x < 10) {
         player.x = 10;
     }
     if (player.x > canvas.width - naveWidth - 10) {
         player.x = canvas.width - naveWidth - 10;
     }
-};
+}
 
-// FUNÇÃO DE DESENHO DO JOGO:
+// FUNÇÃO DE DESENHO DO JOGO
 function desenharJogo() {
-    // LIMPA A TELA PARA O PRÓXIMO FRAME:
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    // DESENHA A NAVE DO PLAYER 
     context.fillStyle = player.cor;
     context.shadowBlur = 15;
     context.shadowColor = player.cor;
 
-    // BASE DA NAVE
     context.fillRect(player.x, player.y, naveWidth, naveHeight);
 
-    // CANO DO CANHÃO CENTRALIZADOR
     context.fillRect(
-        player.x + naveWidth / 2 - 4, // ALINHA NO MEIO DA BASE
-        player.y - 8, // SOBE UM POUCO
-        8, // LARGURA DO CANHÃO
-        8 // ALTURA DO CANHÃO
+        player.x + naveWidth / 2 - 4,
+        player.y - 8,
+        8,
+        8
     );
 
-    // DESENHO DOS LASERS DO JOGADOR
     lasers.forEach(laser => {
         context.fillStyle = laser.cor;
         context.shadowBlur = 10;
@@ -413,7 +361,6 @@ function desenharJogo() {
         context.fillRect(laser.x, laser.y, laser.largura, laser.altura);
     });
 
-    // DESENHO OS BUNKERS
     bunkers.forEach(bloco => {
         context.fillStyle = bunkerCor;
         context.shadowBlur = 8;
@@ -421,40 +368,30 @@ function desenharJogo() {
         context.fillRect(bloco.x, bloco.y, bloco.largura, bloco.altura);
     });
 
-    // DESENHO DOS ALIENS
+    context.shadowBlur = 10;
+    context.shadowColor = "#ff007f";
+
+    const spriteAlien = [
+        [0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+        [0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+        [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+        [0, 1, 1, 2, 1, 1, 2, 1, 1, 0],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+        [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0]
+    ];
+
     aliens.forEach(alien => {
-        context.fillStyle = "#ff007f";
-        context.shadowBlur = 10;
-        context.shadowColor = "#ff007f";
-
-
-        // 1 = PIXEL PINTADO
-        // 0 = PIXEL VAZIO
-        // 2 = OLHO DO ALIEN
-        const spriteAlien = [
-            [0, 0, 1, 0, 0, 0, 0, 1, 0, 0], // Chifres / Antenas
-            [0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-            [0, 0, 1, 1, 1, 1, 1, 1, 0, 0], // Cabeça
-            [0, 1, 1, 2, 1, 1, 2, 1, 1, 0], // Olhos (representados pelo número 2)
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // Corpo / Braços
-            [1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
-            [1, 0, 1, 0, 0, 0, 0, 1, 0, 1], // Perninhas laterais
-            [0, 0, 0, 1, 1, 1, 1, 0, 0, 0]  // Base do meio
-        ];
-
-        // CALCULA O TAMAMNHO DE CADA PIXEL INTERNO DO SPRITE BASEADO NO TAMANHO TOTAL DO ALIEN
         const pixelTamanhoX = alien.largura / spriteAlien[0].length;
         const pixelTamanhoY = alien.altura / spriteAlien.length;
 
-        // VARRE A MATRIZ DESENHANDO BLOCO POR BLOCO
         for (let l = 0; l < spriteAlien.length; l++) {
             for (let c = 0; c < spriteAlien[l].length; c++) {
                 const tipoPixel = spriteAlien[l][c];
 
-                if (tipoPixel === 1){
-                    // DESENHA A PARTE COLORIDA DO CORPO DO ALIEN
+                if (tipoPixel === 1) {
                     context.fillStyle = "#ff007f";
-                    context.shadowBlur = 10;
                     context.fillRect(
                         alien.x + (c * pixelTamanhoX),
                         alien.y + (l * pixelTamanhoY),
@@ -462,33 +399,31 @@ function desenharJogo() {
                         pixelTamanhoY + 0.5
                     );
                 } else if (tipoPixel === 2) {
-                    // DESENHA OS OLHOS 
-                    context.fillStyle = "#08090f";
                     context.shadowBlur = 0;
+                    context.fillStyle = "#08090f";
                     context.fillRect(
                         alien.x + (c * pixelTamanhoX),
                         alien.y + (l * pixelTamanhoY),
                         pixelTamanhoX + 0.5,
                         pixelTamanhoY + 0.5
                     );
+                    context.shadowBlur = 10;
                 }
             }
-        };
+        }
     });
-
-    // DESENHO DA NAVE MÃE
+    
     if (ufo !== null) {
         context.fillStyle = ufoCor;
         context.shadowBlur = 15;
         context.shadowColor = ufoCor;
 
-        // MAPA DE PIXEL 8X5:
         const spriteUfo = [
-            [0, 0, 0, 1, 1, 1, 1, 0, 0, 0], // Cúpula de cima
+            [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
             [0, 1, 1, 1, 1, 1, 1, 1, 1, 0], 
-            [1, 1, 0, 1, 0, 0, 1, 0, 1, 1], // Janelinhas (0 são os furos vazios)
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // Prato central
-            [0, 0, 1, 0, 1, 1, 0, 1, 0, 0]  // Propulsores de baixo
+            [1, 1, 0, 1, 0, 0, 1, 0, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 1, 0, 1, 1, 0, 1, 0, 0]
         ];
 
         const pixelTamanhoX = ufo.largura / spriteUfo[0].length;
@@ -508,7 +443,6 @@ function desenharJogo() {
         }
     }
 
-    // DESENHO DOS TIROS DOS ALIENS
     laserAliens.forEach(tiro => {
         context.strokeStyle = "#ff0000";
         context.lineWidth = 2.5;
@@ -516,43 +450,35 @@ function desenharJogo() {
         context.shadowColor = "#ff0000";
 
         context.beginPath();
-        // COMEÇA NO TOPO DO LASER
         context.moveTo(tiro.x + (tiro.largura / 2), tiro.y);
 
-        // DESENHA O ZIGUE-ZAGUE DO RAIO ATÉ O FINAL DA ALTURA DELE
         context.lineTo(tiro.x, tiro.y + (tiro.altura * 0.3));
         context.lineTo(tiro.x + tiro.largura, tiro.y + (tiro.altura * 0.6));
         context.lineTo(tiro.x + (tiro.largura / 2), tiro.y + tiro.altura);
 
-        context.stroke()
+        context.stroke();
     });
 
-    // RESETA O EFEITO DE SOMBRA PARA NÃO IMPACTAR OUTRAS COISAS
     context.shadowBlur = 0;
 }
 
-// FUNÇÃO QUE INICIA OS BUNKERS DO JOGO:
+// FUNÇÃO QUE INICIA OS BUNKERS DO JOGO
 function inicializarBunkers() {
     bunkers.length = 0; 
 
-    // CALCULA O ESPAÇAMENTO HORIZONTAL ENTRE OS 4 BUNKERS
     const espacoTotal = canvas.width;
     const larguraBunker = bunkerColunas * blocoTamanho;
-    const espacoDisponivel = espacoTotal - (larguraBunker * bunkerLinhas);
-    const intervaloX = espacoDisponivel / (bunkerQuantidade + 1); // DISTRIBUIÇÃO UNIFORME
+    const espacoDisponivel = espacoTotal - (larguraBunker * bunkerQuantidade);
+    const intervaloX = espacoDisponivel / (bunkerQuantidade + 1);
 
     for (let b = 0; b < bunkerQuantidade; b++) {
-        // CALCULA A COORDENADA X INICIAL DO BUNKER ESPECÍFICO
         const inicioX = intervaloX + b * (larguraBunker + intervaloX);
-        const inicioY = canvas.height - 150; // POSICIONA UM POUCO ACIMA DA NAVE
+        const inicioY = canvas.height - 150;
 
-        // CRIA A GRADE DE TIJOLOS DO BUNKER:
         for (let l = 0; l < bunkerLinhas; l++) {
             for (let c = 0; c < bunkerColunas; c++) {
-
-                // PULA OS CANTOS SUPERIORES DO BUNKER PARA ELE FICAR COM A FORMA CLÁSSICA DE "U" INVERTIDO
-                if (l === 0 && (c === 0 || c === bunkerColunas - 1)) continue; // CORTA CANTOS DE CIMA
-                if (l === bunkerLinhas - 1 && (c > 1 && c < bunkerColunas - 2)) continue; // ABRE O VÃO DE BAIXO
+                if (l === 0 && (c === 0 || c === bunkerColunas - 1)) continue;
+                if (l === bunkerLinhas - 1 && (c > 1 && c < bunkerColunas - 2)) continue;
 
                 bunkers.push({
                     x: inicioX + (c * blocoTamanho),
@@ -565,11 +491,10 @@ function inicializarBunkers() {
     }
 }
 
-// FUNÇÃO QUE CRIA A HORDA DE ALIENS NO TOPO DA TELA:
+// FUNÇÃO QUE CRIA A HORDA DE ALIENS NO TOPO DA TELA
 function inicializarAliens() {
-    aliens.length = 0; // LIMPA O ARRAY ANTERIOR
+    aliens.length = 0;
 
-    // PONTO DE PARTIDA NO TOPO ESQUERDO DO CANVAS
     const margemEsquerda = 35;
     const margemTopo = 50;
 
@@ -580,19 +505,18 @@ function inicializarAliens() {
                 y: margemTopo + l * (aliensHeight + aliensRecuoY),
                 largura: aliensWidth,
                 altura: aliensHeight,
-                pontos: (aliensLinhas - l) * 10, // AS FILEIRAS MAIS ALTAS DÃO MAIS PONTOS
+                pontos: (aliensLinhas - l) * 10,
                 vivo: true
             });
         }
     }
 }
 
-// FUNÇÃO QUE DESENHA TELA DE GAME OVER POR CIMA DO JOGO:
+// FUNÇÃO QUE DESENHA TELA DE GAME OVER POR CIMA DO JOGO
 function gameOver() {
     context.fillStyle = "rgba(8, 9, 15, 0.9)";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    // CONFIGURAÇÃO E DESENHO DO TEXTO "GAME OVER"
     context.font = "26px 'Press Start 2P', system-ui";
     context.fillStyle = "#ff0055";
     context.textAlign = "center";
@@ -601,14 +525,12 @@ function gameOver() {
     
     context.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 10);
 
-    // DESENHA A PONTUAÇÃO FINAL DO JOGADOR
     context.font = "14px 'Press Start 2P', system-ui";
     context.fillStyle = "#fff";
     context.shadowBlur = 8;
     context.shadowColor = "#fff";
     context.fillText(`PONTUAÇÃO FINAL: ${String(score).padStart(4, '0')}`, canvas.width / 2, canvas.height / 2 + 50);
 
-    // INSTRUÇÃO PARA REINICIAR
     context.font = "12px 'Press Start 2P', system-ui";
     context.fillStyle = "#00f0ff";
     context.shadowBlur = 10;
@@ -616,11 +538,10 @@ function gameOver() {
     
     context.fillText("PRESSIONE [ENTER] PARA JOGAR NOVAMENTE", canvas.width / 2, canvas.height / 2 + 100);
     
-    // RESETA AS SOMBRAS PARA NÃO AFETAR OUTROS ELEMENTOS
     context.shadowBlur = 0;
 }
 
-// FUNÇÃO QUE REINICIA TUDO PARA RECOMEÇAR O JOGO:
+// FUNÇÃO QUE REINICIA TUDO PARA RECOMEÇAR O JOGO
 function reiniciarJogoCompleto() {
     score = 0;
     lives = 3;
@@ -629,18 +550,14 @@ function reiniciarJogoCompleto() {
     aliensDirecaoX = 1;
     ufo = null;
 
-    // LIMPA OS ARRAYS DE TIROS ATIVOS
     lasers.length = 0;
     laserAliens.length = 0;
 
-    // ATUALIZA OS TEXTOS DO HTML
     if (htmlScore) htmlScore.textContent = "0000";
     if (htmlLives) htmlLives.textContent = "♥".repeat(lives);
 
-    // REPOSICIONA O JOGADOR NO CENTRO
     player.x = canvas.width / 2 - naveWidth / 2;
 
-    // RECONSTRÓI O MAPA DO JOGO
     inicializarBunkers();
     inicializarAliens();
 }
@@ -658,17 +575,14 @@ function gameLoop() {
 
         desenharJogo();
     } else {
-
-    desenharJogo();
-    gameOver();
-}
+        desenharJogo();
+        gameOver();
+    }
 
     requestAnimationFrame(gameLoop);
 }
 
-// INICIA OS BUNKERS
+// INICIALIZAÇÃO DO JOGO
 inicializarBunkers();
-// INICIA OS ALIENS
 inicializarAliens();
-// INICIA O JOGO
 gameLoop();
